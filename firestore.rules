@@ -1,0 +1,47 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global Helpers
+    function isValidId(id) { return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); }
+    function isSignedIn() { return request.auth != null; }
+    function isOwner(tenantId) { return isSignedIn() && request.auth.uid == tenantId; }
+
+    // Validation Helpers
+    function isValidTenant(data) {
+      return data.ownerId is string && data.name is string && data.slug is string;
+    }
+
+    // Default Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // TENANTS Collection
+    match /tenants/{tenantId} {
+      allow read: if true;
+      allow create: if isSignedIn() && request.resource.data.ownerId == request.auth.uid && tenantId == request.auth.uid && isValidTenant(request.resource.data);
+      allow update: if isOwner(tenantId) && isValidTenant(request.resource.data);
+      allow delete: if isOwner(tenantId);
+
+      // CATEGORIES Subcollection
+      match /categories/{categoryId} {
+        allow read: if true;
+        allow write: if isOwner(tenantId);
+      }
+
+      // PRODUCTS Subcollection
+      match /products/{productId} {
+        allow read: if true;
+        allow write: if isOwner(tenantId);
+      }
+
+      // ORDERS Subcollection
+      match /orders/{orderId} {
+        allow create: if true;
+        allow read, update, delete: if isOwner(tenantId);
+      }
+    }
+  }
+}
