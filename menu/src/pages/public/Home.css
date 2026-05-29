@@ -317,7 +317,8 @@
 .home-landing .kcol {
   background: var(--surface);
   padding: 12px 11px 16px;
-  min-height: 280px;
+  height: 460px;
+  overflow: hidden;
 }
 .home-landing .kcol-head {
   display: flex;
