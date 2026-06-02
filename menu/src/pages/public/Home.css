@@ -596,7 +596,12 @@
   margin: 0 auto;
   align-items: stretch;
 }
-@media (max-width: 760px) { .home-landing .pricing-grid { grid-template-columns: 1fr; } }
+@media (max-width: 760px) {
+  .home-landing .pricing-grid {
+    grid-template-columns: 1fr;
+    max-width: 420px;
+  }
+}
 .home-landing .price-card {
   position: relative;
   border: 1px solid var(--line-2);
@@ -606,10 +611,17 @@
   display: flex;
   flex-direction: column;
 }
+@media (max-width: 760px) {
+  .home-landing .price-card { padding: 28px 24px 24px; }
+}
 .home-landing .price-card .plan { font-family: var(--font-mono); font-size: 12.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
 .home-landing .price-card .amount { display: flex; align-items: baseline; gap: 6px; margin: 16px 0 4px; }
 .home-landing .price-card .amount .cur { font-family: var(--font-display); font-size: 24px; font-weight: 600; color: var(--muted); }
 .home-landing .price-card .amount .val { font-family: var(--font-display); font-size: 60px; font-weight: 700; letter-spacing: -0.03em; line-height: 1; }
+@media (max-width: 760px) {
+  .home-landing .price-card .amount .cur { font-size: 18px; }
+  .home-landing .price-card .amount .val { font-size: 44px; }
+}
 .home-landing .price-card .amount .per { font-size: 16px; color: var(--muted); }
 .home-landing .price-card .sub { font-size: 14.5px; color: var(--faint); margin-bottom: 22px; }
 .home-landing .price-feats { list-style: none; padding: 0; margin: 0 0 28px; display: flex; flex-direction: column; gap: 13px; flex: 1; }
