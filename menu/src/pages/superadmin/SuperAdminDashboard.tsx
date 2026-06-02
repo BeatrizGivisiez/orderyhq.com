@@ -7,20 +7,15 @@ import { DEFAULT_TENANT_COLOR } from '../../lib/theme';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
-type TenantWithStats = Tenant;
-
 export const SuperAdminDashboard: React.FC = () => {
-  const [tenants, setTenants] = useState<TenantWithStats[]>([]);
+  const [tenants, setTenants] = useState<Tenant[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const unsubscribe = onSnapshot(
       collection(db, 'tenants'),
       (snap) => {
-        const data = snap.docs.map(d => ({
-          id: d.id,
-          ...d.data(),
-        } as TenantWithStats));
+        const data = snap.docs.map(d => ({ id: d.id, ...d.data() } as Tenant));
         data.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
         setTenants(data);
         setLoading(false);
@@ -33,19 +28,15 @@ export const SuperAdminDashboard: React.FC = () => {
     return () => unsubscribe();
   }, []);
 
-
   if (loading) return (
     <div className="animate-pulse space-y-4">
-      <div className="h-8 bg-slate-200 rounded w-1/4"></div>
+      <div className="h-8 bg-elevated rounded w-1/4"></div>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        {[...Array(4)].map((_, i) => <div key={i} className="h-28 bg-slate-200 rounded-2xl"></div>)}
+        {[...Array(4)].map((_, i) => <div key={i} className="h-28 bg-elevated rounded-2xl"></div>)}
       </div>
-      <div className="h-64 bg-slate-200 rounded-2xl"></div>
+      <div className="h-64 bg-elevated rounded-2xl"></div>
     </div>
   );
-
-  const openCount = tenants.length;
-  const closedCount = 0;
 
   const thisMonth = tenants.filter(t => {
     if (!t.createdAt) return false;
@@ -56,61 +47,63 @@ export const SuperAdminDashboard: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold tracking-tight text-slate-900">Painel Master</h2>
+      <h2 className="text-2xl font-bold tracking-tight text-content">Painel Master</h2>
 
       {/* Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
+        <div className="bg-surface rounded-2xl border border-line shadow-sm p-5">
           <div className="flex items-center gap-2 mb-2">
-            <Users className="h-4 w-4 text-slate-400" />
-            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Total clientes</p>
+            <Users className="h-4 w-4 text-faint" />
+            <p className="text-xs font-bold text-faint uppercase tracking-wider">Total clientes</p>
           </div>
-          <p className="text-3xl font-bold text-slate-900">{tenants.length}</p>
+          <p className="text-3xl font-bold text-content">{tenants.length}</p>
         </div>
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
+
+        <div className="bg-surface rounded-2xl border border-line shadow-sm p-5">
           <div className="flex items-center gap-2 mb-2">
-            <CheckCircle className="h-4 w-4 text-green-500" />
-            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Abertos agora</p>
+            <CheckCircle className="h-4 w-4 text-accent" />
+            <p className="text-xs font-bold text-faint uppercase tracking-wider">Cadastrados</p>
           </div>
-          <p className="text-3xl font-bold text-green-600">{openCount}</p>
+          <p className="text-3xl font-bold text-accent">{tenants.length}</p>
         </div>
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
+
+        <div className="bg-surface rounded-2xl border border-line shadow-sm p-5">
           <div className="flex items-center gap-2 mb-2">
-            <XCircle className="h-4 w-4 text-slate-400" />
-            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Fechados agora</p>
+            <XCircle className="h-4 w-4 text-faint" />
+            <p className="text-xs font-bold text-faint uppercase tracking-wider">Inativos</p>
           </div>
-          <p className="text-3xl font-bold text-slate-500">{closedCount}</p>
+          <p className="text-3xl font-bold text-muted">0</p>
         </div>
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
+
+        <div className="bg-surface rounded-2xl border border-line shadow-sm p-5">
           <div className="flex items-center gap-2 mb-2">
             <TrendingUp className="h-4 w-4 text-orange-500" />
-            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Novos este mês</p>
+            <p className="text-xs font-bold text-faint uppercase tracking-wider">Novos este mês</p>
           </div>
           <p className="text-3xl font-bold text-orange-500">{thisMonth}</p>
         </div>
       </div>
 
       {/* Tenants list */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+      <div className="bg-surface rounded-2xl border border-line overflow-hidden">
         {tenants.length === 0 ? (
           <div className="p-12 text-center">
-            <Users className="h-10 w-10 text-slate-200 mx-auto mb-3" />
-            <p className="text-slate-400 font-medium text-sm">Nenhum restaurante cadastrado ainda.</p>
+            <Users className="h-10 w-10 text-faint mx-auto mb-3" />
+            <p className="text-muted font-medium text-sm">Nenhum restaurante cadastrado ainda.</p>
           </div>
         ) : (
           <table className="w-full text-sm">
-            <thead className="bg-slate-50 border-b border-slate-100">
+            <thead className="border-b border-line">
               <tr>
-                <th className="text-left px-5 py-3 text-[11px] font-bold text-slate-400 uppercase tracking-wider">Restaurante</th>
-                <th className="text-left px-5 py-3 text-[11px] font-bold text-slate-400 uppercase tracking-wider hidden sm:table-cell">Slug</th>
-                <th className="text-left px-5 py-3 text-[11px] font-bold text-slate-400 uppercase tracking-wider hidden md:table-cell">Cadastro</th>
-                <th className="text-right px-5 py-3 text-[11px] font-bold text-slate-400 uppercase tracking-wider">Status</th>
+                <th className="text-left px-5 py-3 text-[11px] font-bold text-faint uppercase tracking-wider">Restaurante</th>
+                <th className="text-left px-5 py-3 text-[11px] font-bold text-faint uppercase tracking-wider hidden sm:table-cell">Slug</th>
+                <th className="text-left px-5 py-3 text-[11px] font-bold text-faint uppercase tracking-wider hidden md:table-cell">Cadastro</th>
                 <th className="px-5 py-3"></th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-line">
               {tenants.map((tenant) => (
-                <tr key={tenant.id} className="hover:bg-slate-50 transition-colors">
+                <tr key={tenant.id} className="hover:bg-elevated transition-colors">
                   <td className="px-5 py-4">
                     <div className="flex items-center gap-3">
                       <div
@@ -123,15 +116,15 @@ export const SuperAdminDashboard: React.FC = () => {
                         }
                       </div>
                       <div>
-                        <p className="font-bold text-slate-900">{tenant.name}</p>
-                        <p className="text-xs text-slate-400">{tenant.whatsapp || '—'}</p>
+                        <p className="font-bold text-content">{tenant.name}</p>
+                        <p className="text-xs text-faint">{tenant.whatsapp || '—'}</p>
                       </div>
                     </div>
                   </td>
                   <td className="px-5 py-4 hidden sm:table-cell">
-                    <span className="font-mono text-xs text-slate-500">{tenant.slug}</span>
+                    <span className="font-mono text-xs text-muted">{tenant.slug}</span>
                   </td>
-                  <td className="px-5 py-4 hidden md:table-cell text-xs text-slate-500">
+                  <td className="px-5 py-4 hidden md:table-cell text-xs text-muted">
                     {tenant.createdAt ? format(new Date(tenant.createdAt), "dd/MM/yyyy", { locale: ptBR }) : '—'}
                   </td>
                   <td className="px-5 py-4 text-right">
@@ -139,7 +132,7 @@ export const SuperAdminDashboard: React.FC = () => {
                       href={`/r/${tenant.slug}`}
                       target="_blank"
                       rel="noreferrer"
-                      className="p-1.5 text-slate-400 hover:text-orange-500 transition-colors inline-flex"
+                      className="p-1.5 text-faint hover:text-accent transition-colors inline-flex"
                       title="Ver cardápio"
                     >
                       <ExternalLink className="h-4 w-4" />
