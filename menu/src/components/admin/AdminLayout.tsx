@@ -15,8 +15,8 @@ export const AdminLayout: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="flex h-screen items-center justify-center bg-[#F8FAFC]">
-        Carregando...
+      <div className="flex h-screen items-center justify-center bg-bg">
+        <span className="text-faint text-sm">Carregando...</span>
       </div>
     );
   }
@@ -32,14 +32,14 @@ export const AdminLayout: React.FC = () => {
   ];
 
   return (
-    <div className="flex h-screen bg-[#F8FAFC] font-sans text-slate-900 overflow-hidden">
+    <div className="flex h-screen bg-bg font-sans text-content overflow-hidden">
       {/* Sidebar - Desktop */}
-      <aside className="hidden w-64 border-r border-slate-200 bg-white md:flex flex-col">
+      <aside className="hidden w-64 border-r border-line bg-surface md:flex flex-col">
         <div className="p-6 flex items-center gap-3">
-          <div className="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center text-white shadow-lg shadow-orange-200">
+          <div className="w-10 h-10 bg-accent rounded-xl flex items-center justify-center text-accent-ink">
             <Store className="h-6 w-6" />
           </div>
-          <span className="font-bold text-xl tracking-tight">Ordery HQ</span>
+          <span className="font-bold text-xl tracking-tight text-content">Ordery HQ</span>
         </div>
 
         <nav className="flex-1 px-4 space-y-1 mt-4">
@@ -52,32 +52,30 @@ export const AdminLayout: React.FC = () => {
                 to={item.path}
                 className={`flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-colors ${
                   isActive
-                    ? "bg-orange-50 text-orange-600"
-                    : "text-slate-500 hover:bg-slate-50"
+                    ? "bg-accent/12 text-accent"
+                    : "text-muted hover:bg-elevated hover:text-content"
                 }`}
               >
-                <Icon
-                  className={`h-5 w-5 ${isActive ? "text-orange-600" : "text-slate-500"}`}
-                />
+                <Icon className={`h-5 w-5 ${isActive ? "text-accent" : "text-faint"}`} />
                 {item.name}
               </Link>
             );
           })}
         </nav>
 
-        <div className="p-4 border-t border-slate-100 space-y-3">
+        <div className="p-4 border-t border-line space-y-3">
           {tenant?.slug && (
             <Link
               to={`/r/${tenant.slug}`}
               target="_blank"
-              className="bg-white border border-slate-200 hover:border-orange-200 transition-colors w-full flex items-center justify-center rounded-lg py-2 text-xs font-bold text-slate-600 gap-2"
+              className="bg-elevated border border-line-2 hover:border-accent/40 transition-colors w-full flex items-center justify-center rounded-lg py-2 text-xs font-bold text-muted hover:text-accent gap-2"
             >
               VER CARDÁPIO DA LOJA
             </Link>
           )}
           <button
             onClick={logout}
-            className="flex w-full items-center justify-center gap-2 rounded-lg py-2 text-xs font-bold text-red-600 hover:bg-red-50 transition-colors"
+            className="flex w-full items-center justify-center gap-2 rounded-lg py-2 text-xs font-bold text-warn hover:bg-warn/12 transition-colors"
           >
             <LogOut className="h-4 w-4" />
             Sair
@@ -88,34 +86,34 @@ export const AdminLayout: React.FC = () => {
       {/* Main Content */}
       <main className="flex-1 flex flex-col overflow-hidden">
         {/* Mobile Header */}
-        <header className="flex h-16 items-center justify-between border-b bg-white px-4 md:hidden">
+        <header className="flex h-16 items-center justify-between border-b border-line bg-surface px-4 md:hidden">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center text-white shadow-md">
+            <div className="w-8 h-8 bg-accent rounded-lg flex items-center justify-center text-accent-ink">
               <Store className="h-4 w-4" />
             </div>
-            <span className="text-lg font-bold">Ordey HQ</span>
+            <span className="text-lg font-bold text-content">Ordery HQ</span>
           </div>
-          <div className="w-8 h-8 rounded-full bg-slate-200 border-2 border-white shadow-sm flex items-center justify-center overflow-hidden">
-            <span className="text-[10px] font-bold text-slate-500">
+          <div className="w-8 h-8 rounded-full bg-accent/12 border border-line flex items-center justify-center">
+            <span className="text-[10px] font-bold text-accent">
               {user.email?.charAt(0).toUpperCase()}
             </span>
           </div>
         </header>
 
         {/* Desktop Header */}
-        <header className="hidden md:flex h-20 bg-white border-b border-slate-200 px-8 items-center justify-between shrink-0">
+        <header className="hidden md:flex h-20 bg-surface border-b border-line px-8 items-center justify-between shrink-0">
           <div>
-            <h1 className="text-2xl font-bold">Painel de Controle</h1>
-            <p className="text-slate-500 text-sm">
+            <h1 className="text-2xl font-bold text-content">Painel de Controle</h1>
+            <p className="text-muted text-sm">
               Bem-vindo, {tenant?.name || user.email}
             </p>
           </div>
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2 px-4 py-2 border border-slate-200 rounded-full text-sm font-medium">
-              <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+            <div className="flex items-center gap-2 px-4 py-2 border border-line rounded-full text-sm font-medium text-muted">
+              <span className="w-2 h-2 rounded-full bg-accent animate-pulse"></span>
               Conectado
             </div>
-            <div className="w-10 h-10 rounded-full bg-orange-100 text-orange-600 border-2 border-white shadow-sm flex items-center justify-center font-bold">
+            <div className="w-10 h-10 rounded-full bg-accent/12 text-accent border border-line flex items-center justify-center font-bold">
               {user.email?.charAt(0).toUpperCase()}
             </div>
           </div>
@@ -127,7 +125,7 @@ export const AdminLayout: React.FC = () => {
       </main>
 
       {/* Mobile Nav - Bottom */}
-      <nav className="fixed bottom-0 z-50 flex w-full border-t bg-white pb-safe md:hidden">
+      <nav className="fixed bottom-0 z-50 flex w-full border-t border-line bg-surface pb-safe md:hidden">
         {navItems.map((item) => {
           const isActive = location.pathname === item.path;
           const Icon = item.icon;
@@ -136,7 +134,7 @@ export const AdminLayout: React.FC = () => {
               key={item.name}
               to={item.path}
               className={`flex flex-1 flex-col items-center justify-center py-3 text-xs font-medium ${
-                isActive ? "text-orange-600" : "text-slate-500"
+                isActive ? "text-accent" : "text-faint"
               }`}
             >
               <Icon className="mb-1 h-5 w-5" />

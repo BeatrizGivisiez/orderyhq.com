@@ -6,6 +6,7 @@ import { Tenant } from "../../types";
 import { Button } from "../ui/Button";
 import { Input } from "../ui/Input";
 import { formatCurrency } from "../../lib/utils";
+import { DEFAULT_TENANT_COLOR } from "../../lib/theme";
 import { X, Minus, Plus, ShoppingBag } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -84,7 +85,7 @@ export const CartModal: React.FC<CartModalProps> = ({
           <h2 className="text-xl font-bold flex items-center text-slate-900">
             <ShoppingBag
               className="mr-3 h-5 w-5"
-              style={{ color: tenant.themeColor || "#f97316" }}
+              style={{ color: tenant.themeColor || DEFAULT_TENANT_COLOR }}
             />
             Sua Sacola
           </h2>
@@ -116,7 +117,7 @@ export const CartModal: React.FC<CartModalProps> = ({
                     </h4>
                     <p
                       className="text-sm font-bold mt-1"
-                      style={{ color: tenant.themeColor || "#f97316" }}
+                      style={{ color: tenant.themeColor || DEFAULT_TENANT_COLOR }}
                     >
                       {formatCurrency(item.price * item.quantity)}
                     </p>
@@ -131,7 +132,7 @@ export const CartModal: React.FC<CartModalProps> = ({
                         color:
                           item.quantity <= 1
                             ? undefined
-                            : tenant.themeColor || "#f97316",
+                            : tenant.themeColor || DEFAULT_TENANT_COLOR,
                       }}
                     >
                       <Minus className="h-4 w-4 stroke-[3]" />
@@ -144,7 +145,7 @@ export const CartModal: React.FC<CartModalProps> = ({
                         updateQuantity(item.productId, item.quantity + 1)
                       }
                       className="p-1 transition-colors hover:opacity-70"
-                      style={{ color: tenant.themeColor || "#f97316" }}
+                      style={{ color: tenant.themeColor || DEFAULT_TENANT_COLOR }}
                     >
                       <Plus className="h-4 w-4 stroke-[3]" />
                     </button>
@@ -172,6 +173,7 @@ export const CartModal: React.FC<CartModalProps> = ({
                   value={customerName}
                   onChange={(e) => setCustomerName(e.target.value)}
                   required
+                  className="bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 hover:bg-slate-50 focus:bg-white focus:ring-slate-300"
                 />
                 <Input
                   placeholder="WhatsApp (ex: 11999999999)"
@@ -179,12 +181,14 @@ export const CartModal: React.FC<CartModalProps> = ({
                   value={customerPhone}
                   onChange={(e) => setCustomerPhone(e.target.value)}
                   required
+                  className="bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 hover:bg-slate-50 focus:bg-white focus:ring-slate-300"
                 />
                 <Input
                   placeholder="Endereço Completo"
                   value={customerAddress}
                   onChange={(e) => setCustomerAddress(e.target.value)}
                   required
+                  className="bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 hover:bg-slate-50 focus:bg-white focus:ring-slate-300"
                 />
 
                 <div className="border-t border-slate-200 pt-4 mt-4 flex justify-between items-center mb-6">
@@ -200,7 +204,7 @@ export const CartModal: React.FC<CartModalProps> = ({
                   type="submit"
                   disabled={loading}
                   className="w-full py-4 text-white rounded-xl text-base font-bold flex justify-center shadow-lg transition-all active:scale-[0.98] disabled:opacity-50"
-                  style={{ backgroundColor: tenant.themeColor || "#f97316" }}
+                  style={{ backgroundColor: tenant.themeColor || DEFAULT_TENANT_COLOR }}
                 >
                   {loading ? "Processando..." : "Finalizar Pedido"}
                 </button>

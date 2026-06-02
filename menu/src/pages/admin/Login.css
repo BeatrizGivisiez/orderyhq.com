@@ -1,22 +1,22 @@
 /* OrderyHQ — Auth page, scoped to .auth-page */
 
 .auth-page {
-  --bg:        #0a0d0b;
-  --surface:   #12160f;
-  --surface-2: #181d15;
-  --elevated:  #1c221a;
-  --line:      rgba(220,255,220,0.085);
-  --line-2:    rgba(220,255,220,0.14);
-  --text:      #eef2ec;
-  --muted:     #98a297;
-  --faint:     #6b746a;
-  --accent:      #6fd08c;
-  --accent-2:    #8fe0a4;
-  --accent-ink:  #07140d;
-  --accent-glow: rgba(111,208,140,0.30);
-  --accent-soft: rgba(111,208,140,0.12);
-  --warn:      #d98a6a;
-  --warn-soft: rgba(217,138,106,0.12);
+  --bg:        var(--color-bg);
+  --surface:   var(--color-surface);
+  --surface-2: var(--color-surface-2);
+  --elevated:  var(--color-elevated);
+  --line:      var(--color-line);
+  --line-2:    var(--color-line-2);
+  --text:      var(--color-content);
+  --muted:     var(--color-muted);
+  --faint:     var(--color-faint);
+  --accent:      var(--color-accent);
+  --accent-2:    var(--color-accent-2);
+  --accent-ink:  var(--color-accent-ink);
+  --accent-glow: var(--color-accent-glow);
+  --accent-soft: var(--color-accent-soft);
+  --warn:      var(--color-warn);
+  --warn-soft: var(--color-warn-soft);
   --font-display: "Space Grotesk", system-ui, sans-serif;
   --font-body:    "Hanken Grotesk", system-ui, sans-serif;
   --font-mono:    "Space Mono", ui-monospace, monospace;

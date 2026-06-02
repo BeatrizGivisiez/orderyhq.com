@@ -3,6 +3,7 @@ import { collection, onSnapshot } from 'firebase/firestore';
 import { db } from '../../services/firebase';
 import { Tenant } from '../../types';
 import { Store, ExternalLink, Users, TrendingUp, CheckCircle, XCircle } from 'lucide-react';
+import { DEFAULT_TENANT_COLOR } from '../../lib/theme';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
@@ -114,7 +115,7 @@ export const SuperAdminDashboard: React.FC = () => {
                     <div className="flex items-center gap-3">
                       <div
                         className="w-8 h-8 rounded-lg flex items-center justify-center text-white shrink-0"
-                        style={{ backgroundColor: tenant.themeColor || '#f97316' }}
+                        style={{ backgroundColor: tenant.themeColor || DEFAULT_TENANT_COLOR }}
                       >
                         {tenant.logoUrl
                           ? <img src={tenant.logoUrl} alt="" className="w-full h-full object-cover rounded-lg" />

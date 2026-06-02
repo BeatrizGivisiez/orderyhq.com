@@ -15,7 +15,6 @@ export const MenuManager: React.FC = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Form State
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [name, setName] = useState('');
@@ -161,25 +160,28 @@ export const MenuManager: React.FC = () => {
     ? products.filter(p => p.categoryId === filterCategoryId)
     : products;
 
-  if (loading) return <div className="animate-pulse flex space-x-4"><div className="h-4 bg-slate-200 rounded w-1/4"></div></div>;
+  if (loading) return (
+    <div className="animate-pulse flex space-x-4">
+      <div className="h-4 bg-elevated rounded w-1/4"></div>
+    </div>
+  );
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900">Meu Cardápio</h1>
+        <h1 className="text-2xl font-bold tracking-tight text-content">Meu Cardápio</h1>
         <div className="flex items-center gap-2">
-          {/* Toggle lista/card */}
-          <div className="flex bg-slate-100 rounded-lg p-1 gap-1">
+          <div className="flex bg-elevated rounded-lg p-1 gap-1">
             <button
               onClick={() => setViewMode('list')}
-              className={`p-1.5 rounded-md transition-colors ${viewMode === 'list' ? 'bg-white shadow-sm text-slate-800' : 'text-slate-400 hover:text-slate-600'}`}
+              className={`p-1.5 rounded-md transition-colors ${viewMode === 'list' ? 'bg-surface text-content shadow-sm' : 'text-faint hover:text-muted'}`}
               title="Visualização em lista"
             >
               <LayoutList className="h-4 w-4" />
             </button>
             <button
               onClick={() => setViewMode('grid')}
-              className={`p-1.5 rounded-md transition-colors ${viewMode === 'grid' ? 'bg-white shadow-sm text-slate-800' : 'text-slate-400 hover:text-slate-600'}`}
+              className={`p-1.5 rounded-md transition-colors ${viewMode === 'grid' ? 'bg-surface text-content shadow-sm' : 'text-faint hover:text-muted'}`}
               title="Visualização em cards"
             >
               <LayoutGrid className="h-4 w-4" />
@@ -196,7 +198,7 @@ export const MenuManager: React.FC = () => {
         <div className="flex gap-2 flex-wrap">
           <button
             onClick={() => setFilterCategoryId(null)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${filterCategoryId === null ? 'bg-orange-500 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${filterCategoryId === null ? 'bg-accent text-accent-ink' : 'bg-elevated text-faint hover:bg-surface-2 hover:text-muted'}`}
           >
             Todos ({products.length})
           </button>
@@ -204,7 +206,7 @@ export const MenuManager: React.FC = () => {
             <button
               key={cat.id}
               onClick={() => setFilterCategoryId(cat.id)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${filterCategoryId === cat.id ? 'bg-orange-500 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${filterCategoryId === cat.id ? 'bg-accent text-accent-ink' : 'bg-elevated text-faint hover:bg-surface-2 hover:text-muted'}`}
             >
               {cat.name} ({products.filter(p => p.categoryId === cat.id).length})
             </button>
@@ -214,46 +216,46 @@ export const MenuManager: React.FC = () => {
 
       {/* Lista */}
       {viewMode === 'list' && (
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-          <ul className="divide-y divide-slate-100">
+        <div className="bg-surface rounded-xl border border-line overflow-hidden">
+          <ul className="divide-y divide-line">
             {visibleProducts.length === 0 ? (
-              <li className="p-8 text-center text-slate-500 text-sm font-medium">
+              <li className="p-8 text-center text-faint text-sm font-medium">
                 {filterCategoryId ? 'Nenhum produto nesta categoria.' : 'Nenhum produto cadastrado.'}
               </li>
             ) : (
               visibleProducts.map((product) => (
-                <li key={product.id} className="p-4 hover:bg-slate-50 flex items-center gap-4 transition-colors">
-                  <div className="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center shrink-0 overflow-hidden">
+                <li key={product.id} className="p-4 hover:bg-elevated flex items-center gap-4 transition-colors">
+                  <div className="w-12 h-12 rounded-xl bg-elevated flex items-center justify-center shrink-0 overflow-hidden">
                     {product.imageUrl
                       ? <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover" />
-                      : <ShoppingBag className="h-5 w-5 text-slate-300" />
+                      : <ShoppingBag className="h-5 w-5 text-faint" />
                     }
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-sm font-bold text-slate-900">{product.name}</h3>
-                    <p className="text-xs text-slate-500 line-clamp-1 mt-0.5">{product.description}</p>
+                    <h3 className="text-sm font-bold text-content">{product.name}</h3>
+                    <p className="text-xs text-faint line-clamp-1 mt-0.5">{product.description}</p>
                     <div className="flex items-center gap-2 mt-1 flex-wrap">
                       {product.promotionalPrice ? (
                         <div className="flex items-center gap-1.5">
-                          <p className="text-sm font-bold text-orange-500">{formatCurrency(product.promotionalPrice)}</p>
-                          <p className="text-xs text-slate-400 line-through">{formatCurrency(product.price)}</p>
-                          <span className="text-[9px] bg-red-100 text-red-600 font-bold px-1.5 py-0.5 rounded-full">
+                          <p className="text-sm font-bold text-accent">{formatCurrency(product.promotionalPrice)}</p>
+                          <p className="text-xs text-faint line-through">{formatCurrency(product.price)}</p>
+                          <span className="text-[9px] bg-warn/15 text-warn font-bold px-1.5 py-0.5 rounded-full">
                             -{Math.round((1 - product.promotionalPrice / product.price) * 100)}%
                           </span>
                         </div>
                       ) : (
-                        <p className="text-sm font-bold text-orange-500">{formatCurrency(product.price)}</p>
+                        <p className="text-sm font-bold text-accent">{formatCurrency(product.price)}</p>
                       )}
-                      <span className="text-[10px] bg-slate-100 text-slate-500 font-bold px-2 py-0.5 rounded-full">
+                      <span className="text-[10px] bg-elevated text-faint font-bold px-2 py-0.5 rounded-full border border-line">
                         {getCategoryName(product.categoryId)}
                       </span>
                     </div>
                   </div>
                   <div className="flex space-x-2 shrink-0">
-                    <button onClick={() => openForm(product)} className="p-2 text-slate-400 hover:text-orange-600 rounded-lg hover:bg-orange-50 transition-colors">
+                    <button onClick={() => openForm(product)} className="p-2 text-faint hover:text-accent rounded-lg hover:bg-accent/8 transition-colors">
                       <Edit2 className="h-4 w-4" />
                     </button>
-                    <button onClick={() => handleDelete(product.id)} className="p-2 text-slate-400 hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors">
+                    <button onClick={() => handleDelete(product.id)} className="p-2 text-faint hover:text-warn rounded-lg hover:bg-warn/8 transition-colors">
                       <Trash2 className="h-4 w-4" />
                     </button>
                   </div>
@@ -268,27 +270,27 @@ export const MenuManager: React.FC = () => {
       {viewMode === 'grid' && (
         <div>
           {visibleProducts.length === 0 ? (
-            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-8 text-center text-slate-500 text-sm font-medium">
+            <div className="bg-surface rounded-xl border border-line p-8 text-center text-faint text-sm font-medium">
               {filterCategoryId ? 'Nenhum produto nesta categoria.' : 'Nenhum produto cadastrado.'}
             </div>
           ) : (
             <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 xl:grid-cols-7 gap-3">
               {visibleProducts.map((product) => (
-                <div key={product.id} className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden hover:shadow-md hover:border-orange-200 transition-all flex flex-col">
-                  <div className="w-full aspect-square bg-slate-100 flex items-center justify-center overflow-hidden">
+                <div key={product.id} className="bg-surface rounded-xl border border-line overflow-hidden hover:border-accent/30 transition-all flex flex-col">
+                  <div className="w-full aspect-square bg-elevated flex items-center justify-center overflow-hidden">
                     {product.imageUrl
                       ? <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover" />
-                      : <ShoppingBag className="h-6 w-6 text-slate-300" />
+                      : <ShoppingBag className="h-6 w-6 text-faint" />
                     }
                   </div>
                   <div className="p-2 flex flex-col flex-1">
-                    <h3 className="text-xs font-bold text-slate-900 leading-tight line-clamp-1">{product.name}</h3>
-                    <p className="text-orange-500 font-bold text-xs mt-1">{formatCurrency(product.price)}</p>
-                    <div className="mt-1.5 pt-1.5 border-t border-slate-100 flex gap-1">
-                      <button onClick={() => openForm(product)} className="flex-1 py-0.5 text-slate-400 hover:text-orange-600 rounded hover:bg-orange-50 transition-colors flex items-center justify-center">
+                    <h3 className="text-xs font-bold text-content leading-tight line-clamp-1">{product.name}</h3>
+                    <p className="text-accent font-bold text-xs mt-1">{formatCurrency(product.price)}</p>
+                    <div className="mt-1.5 pt-1.5 border-t border-line flex gap-1">
+                      <button onClick={() => openForm(product)} className="flex-1 py-0.5 text-faint hover:text-accent rounded hover:bg-accent/8 transition-colors flex items-center justify-center">
                         <Edit2 className="h-3 w-3" />
                       </button>
-                      <button onClick={() => handleDelete(product.id)} className="flex-1 py-0.5 text-slate-400 hover:text-red-600 rounded hover:bg-red-50 transition-colors flex items-center justify-center">
+                      <button onClick={() => handleDelete(product.id)} className="flex-1 py-0.5 text-faint hover:text-warn rounded hover:bg-warn/8 transition-colors flex items-center justify-center">
                         <Trash2 className="h-3 w-3" />
                       </button>
                     </div>
@@ -301,55 +303,33 @@ export const MenuManager: React.FC = () => {
       )}
 
       {isFormOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden max-h-[90vh] flex flex-col">
-            <div className="flex items-center justify-between p-5 border-b border-slate-100 shrink-0">
-              <h3 className="text-lg font-bold text-slate-900">{editingId ? 'Editar Produto' : 'Novo Produto'}</h3>
-              <button onClick={closeForm} className="text-slate-400 hover:text-slate-600 rounded-full p-1 hover:bg-slate-100 transition-colors">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+          <div className="bg-surface border border-line rounded-2xl shadow-xl w-full max-w-md overflow-hidden max-h-[90vh] flex flex-col">
+            <div className="flex items-center justify-between p-5 border-b border-line shrink-0">
+              <h3 className="text-lg font-bold text-content">{editingId ? 'Editar Produto' : 'Novo Produto'}</h3>
+              <button onClick={closeForm} className="text-faint hover:text-muted rounded-full p-1 hover:bg-elevated transition-colors">
                 <X className="h-5 w-5" />
               </button>
             </div>
 
             <form onSubmit={handleSave} className="p-5 space-y-4 overflow-y-auto">
-              <Input
-                label="Nome do Produto"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-                placeholder="Ex: X-Burguer Especial"
-              />
+              <Input label="Nome do Produto" value={name} onChange={(e) => setName(e.target.value)} required placeholder="Ex: X-Burguer Especial" />
 
-              <Input
-                label="Preço Original"
-                type="number"
-                step="0.01"
-                min="0"
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
-                required
-                placeholder="25.90"
-              />
+              <Input label="Preço Original" type="number" step="0.01" min="0" value={price} onChange={(e) => setPrice(e.target.value)} required placeholder="25.90" />
+
               <div>
-                <Input
-                  label="Preço Promocional (opcional)"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  value={promotionalPrice}
-                  onChange={(e) => setPromotionalPrice(e.target.value)}
-                  placeholder="19.90"
-                />
+                <Input label="Preço Promocional (opcional)" type="number" step="0.01" min="0" value={promotionalPrice} onChange={(e) => setPromotionalPrice(e.target.value)} placeholder="19.90" />
                 {promotionalPrice && price && parseFloat(promotionalPrice) > 0 && parseFloat(promotionalPrice) < parseFloat(price) && (
-                  <p className="text-xs text-green-600 font-bold mt-1">
+                  <p className="text-xs text-accent font-bold mt-1">
                     Desconto de {Math.round((1 - parseFloat(promotionalPrice) / parseFloat(price)) * 100)}% aplicado
                   </p>
                 )}
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-slate-700 mb-1">Descrição</label>
+                <label className="block text-sm font-bold text-muted mb-1">Descrição</label>
                 <textarea
-                  className="flex w-full rounded-xl border border-slate-200 bg-slate-50 hover:bg-white transition-colors px-4 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white"
+                  className="flex w-full rounded-xl border border-line-2 bg-surface-2 hover:bg-elevated transition-colors px-4 py-2 text-sm text-content placeholder:text-faint focus:outline-none focus:ring-2 focus:ring-accent focus:bg-elevated"
                   rows={2}
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
@@ -357,26 +337,21 @@ export const MenuManager: React.FC = () => {
                 />
               </div>
 
-              <Input
-                label="URL da Imagem (Opcional)"
-                value={imageUrl}
-                onChange={(e) => setImageUrl(e.target.value)}
-                placeholder="https://exemplo.com/imagem.jpg"
-              />
+              <Input label="URL da Imagem (Opcional)" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} placeholder="https://exemplo.com/imagem.jpg" />
               {imageUrl && (
-                <img src={imageUrl} alt="Preview" className="w-full h-32 object-cover rounded-xl border border-slate-200" onError={(e) => (e.currentTarget.style.display = 'none')} />
+                <img src={imageUrl} alt="Preview" className="w-full h-32 object-cover rounded-xl border border-line" onError={(e) => (e.currentTarget.style.display = 'none')} />
               )}
 
-              {/* Categoria */}
               <div>
-                <label className="block text-sm font-bold text-slate-700 mb-1">Categoria</label>
+                <label className="block text-sm font-bold text-muted mb-1">Categoria</label>
                 {categories.length === 0 ? (
-                  <p className="text-xs text-slate-400 mb-2">Nenhuma categoria criada ainda.</p>
+                  <p className="text-xs text-faint mb-2">Nenhuma categoria criada ainda.</p>
                 ) : (
                   <select
                     value={categoryId}
                     onChange={(e) => setCategoryId(e.target.value)}
-                    className="flex w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-500 mb-2"
+                    style={{ colorScheme: 'dark' }}
+                    className="flex w-full rounded-xl border border-line-2 bg-surface-2 px-4 py-2 text-sm text-content focus:outline-none focus:ring-2 focus:ring-accent mb-2"
                   >
                     <option value="">Sem categoria</option>
                     {categories.map(cat => (
@@ -385,13 +360,12 @@ export const MenuManager: React.FC = () => {
                   </select>
                 )}
 
-                {/* Gerenciar categorias */}
                 <div className="flex flex-wrap gap-2 mb-2">
                   {categories.map(cat => (
-                    <span key={cat.id} className="flex items-center gap-1 text-[11px] bg-slate-100 text-slate-600 font-bold px-2 py-1 rounded-full">
+                    <span key={cat.id} className="flex items-center gap-1 text-[11px] bg-elevated text-muted font-bold px-2 py-1 rounded-full border border-line">
                       <Tag className="h-3 w-3" />
                       {cat.name}
-                      <button type="button" onClick={() => handleDeleteCategory(cat.id)} className="text-slate-400 hover:text-red-500 ml-0.5">
+                      <button type="button" onClick={() => handleDeleteCategory(cat.id)} className="text-faint hover:text-warn ml-0.5">
                         <X className="h-3 w-3" />
                       </button>
                     </span>
@@ -405,7 +379,7 @@ export const MenuManager: React.FC = () => {
                       value={newCategoryName}
                       onChange={(e) => setNewCategoryName(e.target.value)}
                       placeholder="Nome da categoria"
-                      className="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      className="flex-1 rounded-xl border border-line-2 bg-surface-2 px-3 py-1.5 text-sm text-content placeholder:text-faint focus:outline-none focus:ring-2 focus:ring-accent"
                       onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddCategory())}
                       autoFocus
                     />
@@ -416,14 +390,14 @@ export const MenuManager: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setIsAddingCategory(true)}
-                    className="text-xs font-bold text-orange-500 hover:text-orange-600 flex items-center gap-1"
+                    className="text-xs font-bold text-accent hover:text-accent-2 flex items-center gap-1"
                   >
                     <Plus className="h-3 w-3" /> Nova categoria
                   </button>
                 )}
               </div>
 
-              <div className="pt-4 flex justify-end space-x-3 border-t border-slate-100">
+              <div className="pt-4 flex justify-end space-x-3 border-t border-line">
                 <Button variant="outline" type="button" onClick={closeForm}>Cancelar</Button>
                 <Button type="submit" isLoading={isSaving}>Salvar</Button>
               </div>

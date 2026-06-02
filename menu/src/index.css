@@ -1,6 +1,25 @@
 @import "tailwindcss";
 
 @theme {
+  /* ── App theme — single source of truth ──────────────────────────── */
+  --color-bg:          #0a0d0b;
+  --color-surface:     #12160f;
+  --color-surface-2:   #181d15;
+  --color-elevated:    #1c221a;
+  --color-content:     #eef2ec;
+  --color-muted:       #98a297;
+  --color-faint:       #6b746a;
+  --color-accent:      #6fd08c;
+  --color-accent-2:    #8fe0a4;
+  --color-accent-ink:  #07140d;
+  --color-warn:        #d98a6a;
+  --color-line:        rgba(220,255,220,0.085);
+  --color-line-2:      rgba(220,255,220,0.14);
+  --color-accent-glow: rgba(111,208,140,0.30);
+  --color-accent-soft: rgba(111,208,140,0.12);
+  --color-warn-soft:   rgba(217,138,106,0.12);
+
+  /* ── Animations ───────────────────────────────────────────────────── */
   --animate-slide-in-right: slideInRight 0.3s ease-out forwards;
   --keyframes-slideInRight: {
     from {
@@ -14,13 +33,10 @@
 
 @layer utilities {
   .scrollbar-hide {
-    /* IE and Edge */
     -ms-overflow-style: none;
-    /* Firefox */
     scrollbar-width: none;
   }
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
 }
-

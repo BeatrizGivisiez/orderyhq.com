@@ -11,11 +11,11 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = 'primary', size = 'md', isLoading, children, disabled, ...props }, ref) => {
     const variants = {
-      primary: 'bg-orange-500 text-white hover:bg-orange-600 active:bg-orange-700 disabled:bg-orange-300 shadow-sm shadow-orange-100',
-      secondary: 'bg-slate-100 text-slate-900 hover:bg-slate-200 active:bg-slate-300 disabled:bg-slate-50',
-      outline: 'border border-slate-200 bg-white hover:bg-slate-50 active:bg-slate-100 text-slate-700',
-      danger: 'bg-red-500 text-white hover:bg-red-600 active:bg-red-700 disabled:bg-red-300',
-      ghost: 'bg-transparent text-slate-700 hover:bg-slate-100 active:bg-slate-200',
+      primary:   'bg-accent text-accent-ink hover:bg-accent-2 active:bg-accent disabled:opacity-60',
+      secondary: 'bg-elevated text-content hover:bg-surface-2 active:bg-bg',
+      outline:   'border border-line-2 bg-transparent hover:bg-elevated text-muted hover:text-content',
+      danger:    'bg-warn/12 text-warn hover:bg-warn/20 border border-warn/30',
+      ghost:     'bg-transparent text-muted hover:bg-elevated hover:text-content',
     };
 
     const sizes = {
@@ -29,7 +29,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         disabled={disabled || isLoading}
         className={cn(
-          'inline-flex items-center justify-center rounded-lg font-bold transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2',
+          'inline-flex items-center justify-center rounded-lg font-bold transition-colors focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-bg',
           variants[variant],
           sizes[size],
           className
