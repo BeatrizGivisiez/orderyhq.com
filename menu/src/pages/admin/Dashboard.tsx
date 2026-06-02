@@ -178,6 +178,7 @@ export const Dashboard: React.FC = () => {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
   useEffect(() => {
+    if (!('Notification' in window)) return;
     if (Notification.permission === 'default') {
       Notification.requestPermission().then(p => setHasPermission(p === 'granted'));
     } else {
@@ -195,7 +196,7 @@ export const Dashboard: React.FC = () => {
           const order = change.doc.data() as Order;
           if (order.status === 'recebido') {
             playNotificationSound();
-            if (hasPermission) new Notification('Novo Pedido!', { body: `${order.customerName} - ${formatCurrency(order.total)}` });
+            if (hasPermission && 'Notification' in window) new Notification('Novo Pedido!', { body: `${order.customerName} - ${formatCurrency(order.total)}` });
           }
         }
       });

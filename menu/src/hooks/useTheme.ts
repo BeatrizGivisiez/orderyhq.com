@@ -1,9 +1,11 @@
 import { useState } from 'react';
 
+const KEY = 'ordery_theme';
+
 export function useTheme() {
   const [isDark, setIsDark] = useState(() => {
     try {
-      return localStorage.getItem('adminTheme') !== 'light';
+      return localStorage.getItem(KEY) !== 'light';
     } catch {
       return true;
     }
@@ -13,7 +15,7 @@ export function useTheme() {
     setIsDark(prev => {
       const next = !prev;
       try {
-        localStorage.setItem('adminTheme', next ? 'dark' : 'light');
+        localStorage.setItem(KEY, next ? 'dark' : 'light');
       } catch {}
       return next;
     });
