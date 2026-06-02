@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+html, body {
+  background: #0a0d0b;
+}
+
 @theme {
   /* ── App theme — single source of truth ──────────────────────────── */
   --color-bg:          #0a0d0b;
