@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { collection, query, orderBy, onSnapshot, doc, updateDoc } from 'firebase/firestore';
+import { collection, query, orderBy, onSnapshot, doc, updateDoc, addDoc } from 'firebase/firestore';
 import { db } from '../../services/firebase';
 import { useAuth } from '../../contexts/AuthContext';
 import { Order, OrderStatus } from '../../types';
 import { formatCurrency, formatPhoneForWA } from '../../lib/utils';
 import toast from 'react-hot-toast';
-import { Play, Send, CheckCircle, X, Phone, MapPin, Clock } from 'lucide-react';
+import { Play, Send, CheckCircle, X, Phone, MapPin, Clock, Archive } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
@@ -189,7 +189,7 @@ export const Dashboard: React.FC = () => {
     if (!tenant?.id) return;
     const q = query(collection(db, `tenants/${tenant.id}/orders`), orderBy('createdAt', 'desc'));
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const newOrders = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Order));
+      const newOrders = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Order)).filter(o => !o.archived);
       snapshot.docChanges().forEach((change) => {
         if (change.type === 'added' && !loading) {
           const order = change.doc.data() as Order;
@@ -234,6 +234,26 @@ export const Dashboard: React.FC = () => {
       if (msg) window.open(`https://wa.me/55${formatPhoneForWA(customerPhone)}?text=${encodeURIComponent(msg)}`, '_blank');
     } catch {
       toast.error('Erro ao atualizar pedido');
+    }
+  };
+
+  const archiveOrder = async (order: Order) => {
+    if (!tenant) return;
+    try {
+      await addDoc(collection(db, `tenants/${tenant.id}/sales`), {
+        orderId: order.id,
+        customerName: order.customerName,
+        customerPhone: order.customerPhone,
+        customerAddress: order.customerAddress,
+        items: order.items,
+        total: order.total,
+        createdAt: order.createdAt,
+        completedAt: Date.now(),
+      });
+      await updateDoc(doc(db, `tenants/${tenant.id}/orders`, order.id), { archived: true });
+      toast.success('Pedido arquivado nas vendas');
+    } catch {
+      toast.error('Erro ao arquivar pedido');
     }
   };
 
@@ -297,11 +317,11 @@ export const Dashboard: React.FC = () => {
                     </div>
                     <div className="font-bold text-sm text-content">{formatCurrency(order.total)}</div>
 
-                    {s.next && s.actionIcon && (
-                      <div
-                        className="mt-3 pt-3 border-t border-line space-y-2"
-                        onClick={e => e.stopPropagation()}
-                      >
+                    <div
+                      className="mt-3 pt-3 border-t border-line space-y-2"
+                      onClick={e => e.stopPropagation()}
+                    >
+                      {s.next && s.actionIcon && (
                         <button
                           className={`w-full py-1.5 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition-colors ${s.actionStyle}`}
                           onClick={() => updateStatus(order.id, s.next!, order.customerPhone)}
@@ -309,14 +329,22 @@ export const Dashboard: React.FC = () => {
                           {React.createElement(s.actionIcon, { className: 'w-3.5 h-3.5' })}
                           {s.actionLabel}
                         </button>
+                      )}
+                      {order.status === 'finalizado' && (
                         <button
-                          className="w-full py-1.5 bg-accent/8 hover:bg-accent/15 text-accent rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition-colors"
-                          onClick={() => window.open(`https://wa.me/55${formatPhoneForWA(order.customerPhone)}`, '_blank')}
+                          className="w-full py-1.5 bg-accent text-accent-ink hover:bg-accent-2 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition-colors"
+                          onClick={() => archiveOrder(order)}
                         >
-                          <Phone className="w-3.5 h-3.5" /> Contato WhatsApp
+                          <Archive className="w-3.5 h-3.5" /> Terminar
                         </button>
-                      </div>
-                    )}
+                      )}
+                      <button
+                        className="w-full py-1.5 bg-accent/8 hover:bg-accent/15 text-accent rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition-colors"
+                        onClick={() => window.open(`https://wa.me/55${formatPhoneForWA(order.customerPhone)}`, '_blank')}
+                      >
+                        <Phone className="w-3.5 h-3.5" /> Contato WhatsApp
+                      </button>
+                    </div>
                   </div>
                 ))}
 

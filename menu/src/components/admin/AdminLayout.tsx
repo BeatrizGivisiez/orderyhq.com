@@ -7,11 +7,17 @@ import {
   Settings,
   LogOut,
   Store,
+  Clock,
+  Sun,
+  Moon,
+  TrendingUp,
 } from "lucide-react";
+import { useTheme } from "../../hooks/useTheme";
 
 export const AdminLayout: React.FC = () => {
   const { user, tenant, loading, logout } = useAuth();
   const location = useLocation();
+  const { isDark, toggle } = useTheme();
 
   if (loading) {
     return (
@@ -28,11 +34,13 @@ export const AdminLayout: React.FC = () => {
   const navItems = [
     { name: "Pedidos", path: "/admin", icon: LayoutDashboard },
     { name: "Cardápio", path: "/admin/menu", icon: MenuIcon },
+    { name: "Horários", path: "/admin/times", icon: Clock },
+    { name: "Vendas", path: "/admin/sales", icon: TrendingUp },
     { name: "Configurações", path: "/admin/settings", icon: Settings },
   ];
 
   return (
-    <div className="flex h-screen bg-bg font-sans text-content overflow-hidden">
+    <div className={`flex h-screen bg-bg font-sans text-content overflow-hidden${!isDark ? ' light' : ''}`}>
       {/* Sidebar - Desktop */}
       <aside className="hidden w-64 border-r border-line bg-surface md:flex flex-col">
         <div className="p-6 flex items-center gap-3">
@@ -113,6 +121,13 @@ export const AdminLayout: React.FC = () => {
               <span className="w-2 h-2 rounded-full bg-accent animate-pulse"></span>
               Conectado
             </div>
+            <button
+              onClick={toggle}
+              title={isDark ? 'Modo claro' : 'Modo escuro'}
+              className="w-9 h-9 rounded-lg border border-line flex items-center justify-center text-muted hover:text-content hover:bg-elevated transition-colors"
+            >
+              {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </button>
             <div className="w-10 h-10 rounded-full bg-accent/12 text-accent border border-line flex items-center justify-center font-bold">
               {user.email?.charAt(0).toUpperCase()}
             </div>

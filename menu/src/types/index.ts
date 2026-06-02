@@ -1,12 +1,28 @@
+export interface DaySchedule {
+  open: boolean;
+  from: string; // "09:30"
+  to: string;   // "18:00"
+}
+
+export interface WeekSchedule {
+  sun: DaySchedule;
+  mon: DaySchedule;
+  tue: DaySchedule;
+  wed: DaySchedule;
+  thu: DaySchedule;
+  fri: DaySchedule;
+  sat: DaySchedule;
+}
+
 export interface Tenant {
-  id: string; // The tenant ID (often the owner's UID)
+  id: string;
   ownerId: string;
   name: string;
   slug: string;
   whatsapp: string;
   logoUrl?: string;
   themeColor?: string;
-  isOpen?: boolean;
+  schedule?: WeekSchedule;
   createdAt: number;
 }
 
@@ -45,4 +61,17 @@ export interface Order {
   total: number;
   status: OrderStatus;
   createdAt: number;
+  archived?: boolean;
+}
+
+export interface Sale {
+  id: string;
+  orderId: string;
+  customerName: string;
+  customerPhone: string;
+  customerAddress: string;
+  items: OrderItem[];
+  total: number;
+  createdAt: number;
+  completedAt: number;
 }

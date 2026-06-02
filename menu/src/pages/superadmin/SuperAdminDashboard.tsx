@@ -44,8 +44,8 @@ export const SuperAdminDashboard: React.FC = () => {
     </div>
   );
 
-  const openCount = tenants.filter(t => t.isOpen !== false).length;
-  const closedCount = tenants.length - openCount;
+  const openCount = tenants.length;
+  const closedCount = 0;
 
   const thisMonth = tenants.filter(t => {
     if (!t.createdAt) return false;
@@ -133,11 +133,6 @@ export const SuperAdminDashboard: React.FC = () => {
                   </td>
                   <td className="px-5 py-4 hidden md:table-cell text-xs text-slate-500">
                     {tenant.createdAt ? format(new Date(tenant.createdAt), "dd/MM/yyyy", { locale: ptBR }) : '—'}
-                  </td>
-                  <td className="px-5 py-4 text-right">
-                    <span className={`px-2 py-1 rounded-full text-[10px] font-bold ${tenant.isOpen !== false ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-500'}`}>
-                      {tenant.isOpen !== false ? 'Aberto' : 'Fechado'}
-                    </span>
                   </td>
                   <td className="px-5 py-4 text-right">
                     <a

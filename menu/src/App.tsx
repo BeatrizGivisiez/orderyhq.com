@@ -3,21 +3,28 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { Toaster } from 'react-hot-toast';
-import { AuthProvider } from './contexts/AuthContext';
-import { CartProvider } from './contexts/CartContext';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import { Toaster } from "react-hot-toast";
+import { AuthProvider } from "./contexts/AuthContext";
+import { CartProvider } from "./contexts/CartContext";
 
 // Layouts & Pages
-import { AdminLayout } from './components/admin/AdminLayout';
-import { Login } from './pages/admin/Login';
-import { Dashboard } from './pages/admin/Dashboard';
-import { MenuManager } from './pages/admin/MenuManager';
-import { Settings } from './pages/admin/Settings';
-import { RestaurantMenu } from './pages/public/RestaurantMenu';
-import { Home } from './pages/public/Home';
-import { SuperAdminLayout } from './components/superadmin/SuperAdminLayout';
-import { SuperAdminDashboard } from './pages/superadmin/SuperAdminDashboard';
+import { AdminLayout } from "./components/admin/AdminLayout";
+import { Login } from "./pages/admin/Login";
+import { Dashboard } from "./pages/admin/Dashboard";
+import { MenuManager } from "./pages/admin/MenuManager";
+import { Settings } from "./pages/admin/Settings";
+import { RestaurantMenu } from "./pages/public/RestaurantMenu";
+import { Home } from "./pages/public/Home";
+import { SuperAdminLayout } from "./components/superadmin/SuperAdminLayout";
+import { SuperAdminDashboard } from "./pages/superadmin/SuperAdminDashboard";
+import { Times } from "./pages/admin/Times";
+import { Sales } from "./pages/admin/Sales";
 
 export default function App() {
   return (
@@ -36,6 +43,8 @@ export default function App() {
               <Route index element={<Dashboard />} />
               <Route path="menu" element={<MenuManager />} />
               <Route path="settings" element={<Settings />} />
+              <Route path="times" element={<Times />} />
+              <Route path="sales" element={<Sales />} />
             </Route>
 
             {/* Super Admin Routes */}
@@ -48,4 +57,3 @@ export default function App() {
     </AuthProvider>
   );
 }
-

@@ -5,9 +5,39 @@ import { db } from "../../services/firebase";
 import { Tenant, Product, Category } from "../../types";
 import { useCart } from "../../contexts/CartContext";
 import { formatCurrency } from "../../lib/utils";
-import { ShoppingBag, Plus } from "lucide-react";
+import { ShoppingBag, Plus, Phone, X } from "lucide-react";
 import { CartModal } from "../../components/public/CartModal";
 import { DEFAULT_TENANT_COLOR } from "../../lib/theme";
+import { WeekSchedule } from "../../types";
+
+const DAY_KEYS: (keyof WeekSchedule)[] = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+const DAY_LABELS: Record<keyof WeekSchedule, string> = {
+  sun: 'Domingo', mon: 'Segunda-feira', tue: 'Terça-feira',
+  wed: 'Quarta-feira', thu: 'Quinta-feira', fri: 'Sexta-feira', sat: 'Sábado',
+};
+
+function getScheduleStatus(schedule: WeekSchedule): { open: boolean; hint: string } {
+  const now = new Date();
+  const todayKey = DAY_KEYS[now.getDay()];
+  const today = schedule[todayKey];
+  const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+
+  if (today.open && currentTime >= today.from && currentTime <= today.to) {
+    return { open: true, hint: `Aberto · Fecha às ${today.to}` };
+  }
+
+  // Find next open slot
+  for (let i = 1; i <= 7; i++) {
+    const key = DAY_KEYS[(now.getDay() + i) % 7];
+    const day = schedule[key];
+    if (day.open) {
+      const label = i === 1 ? 'amanhã' : DAY_LABELS[key];
+      return { open: false, hint: `Abre ${label} às ${day.from}` };
+    }
+  }
+
+  return { open: false, hint: 'Fechado' };
+}
 
 export const RestaurantMenu: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -21,6 +51,7 @@ export const RestaurantMenu: React.FC = () => {
   const [error, setError] = useState(false);
   const { items, addItem, total } = useCart();
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [bannerDismissed, setBannerDismissed] = useState(false);
 
   useEffect(() => {
     const tenantQ = query(collection(db, "tenants"), where("slug", "==", slug));
@@ -100,7 +131,17 @@ export const RestaurantMenu: React.FC = () => {
   }
 
   const itemCount = items.reduce((acc, item) => acc + item.quantity, 0);
+
+  const formatPhone = (phone: string) => {
+    const d = phone.replace(/\D/g, '');
+    if (d.length === 11) return `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}`;
+    if (d.length === 10) return `(${d.slice(0, 2)}) ${d.slice(2, 6)}-${d.slice(6)}`;
+    return phone;
+  };
   const themeColor = tenant.themeColor || DEFAULT_TENANT_COLOR;
+
+  const scheduleStatus = tenant.schedule ? getScheduleStatus(tenant.schedule) : null;
+  const isClosed = scheduleStatus !== null && !scheduleStatus.open;
 
   const hasPromo = products.some(
     (p: Product) => p.promotionalPrice && p.promotionalPrice > 0,
@@ -148,9 +189,17 @@ export const RestaurantMenu: React.FC = () => {
                   />
                 </div>
               )}
-              <h1 className="font-bold text-xl">{tenant.name}</h1>
+              <div>
+                <h1 className="font-bold text-xl">{tenant.name}</h1>
+                {tenant.whatsapp && (
+                  <p className="flex items-center gap-1 text-sm text-white/80 mt-0.5">
+                    <Phone className="h-3.5 w-3.5 shrink-0" />
+                    {formatPhone(tenant.whatsapp)}
+                  </p>
+                )}
+              </div>
             </div>
-            {tenant.isOpen !== false && (
+            {!isClosed && (
               <button
                 onClick={() => setIsCartOpen(true)}
                 className="relative w-10 h-10 bg-white/20 hover:bg-white/30 transition-colors rounded-xl flex items-center justify-center shrink-0"
@@ -219,9 +268,23 @@ export const RestaurantMenu: React.FC = () => {
         <main
           className={`${showFilterBar ? "mt-3" : "-mt-6"} flex-1 px-4 relative z-20 overflow-y-auto pb-24`}
         >
-          {tenant.isOpen === false && (
-            <div className="bg-red-50 border border-red-200 text-red-700 text-center py-3 rounded-2xl mb-4 shadow-sm text-sm font-bold">
-              Restaurante Fechado no Momento
+          {isClosed && !bannerDismissed && (
+            <div className="mb-4 rounded-2xl overflow-hidden shadow-sm border border-red-200">
+              <div className="bg-red-600 text-white flex items-center justify-between px-4 py-3">
+                <span className="text-sm font-bold tracking-wide">Fechado no momento</span>
+                <button
+                  onClick={() => setBannerDismissed(true)}
+                  className="p-1 rounded-full hover:bg-white/20 transition-colors"
+                  aria-label="Fechar aviso"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+              {scheduleStatus?.hint && (
+                <div className="bg-red-50 text-red-600 text-center py-2 text-xs font-medium">
+                  {scheduleStatus.hint}
+                </div>
+              )}
             </div>
           )}
 
@@ -286,7 +349,7 @@ export const RestaurantMenu: React.FC = () => {
                       ) : null}
                     </div>
                   </div>
-                  {tenant.isOpen !== false && (
+                  {!isClosed && (
                     <button
                       onClick={() => addItem(product)}
                       className="ml-auto flex h-8 w-8 items-center justify-center shrink-0 rounded-lg transition-opacity hover:opacity-80 active:scale-95 text-white"
@@ -302,7 +365,7 @@ export const RestaurantMenu: React.FC = () => {
         </main>
 
         {/* Checkout bar */}
-        {itemCount > 0 && tenant.isOpen !== false && (
+        {itemCount > 0 && !isClosed && (
           <div className="absolute bottom-0 left-0 right-0 p-4 bg-white border-t border-slate-100 z-30 shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
             <button
               onClick={() => setIsCartOpen(true)}

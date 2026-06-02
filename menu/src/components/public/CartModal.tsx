@@ -159,12 +159,7 @@ export const CartModal: React.FC<CartModalProps> = ({
         {/* Checkout Form */}
         {items.length > 0 && (
           <div className="border-t border-slate-100 bg-[#F8FAFC] p-6 shrink-0">
-            {tenant.isOpen === false ? (
-              <div className="text-center p-4 bg-red-50 text-red-700 rounded-xl font-bold">
-                Desculpe, o restaurante está fechado.
-              </div>
-            ) : (
-              <form onSubmit={handleCheckout} className="space-y-4">
+            <form onSubmit={handleCheckout} className="space-y-4">
                 <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
                   Dados para entrega
                 </div>
@@ -209,7 +204,6 @@ export const CartModal: React.FC<CartModalProps> = ({
                   {loading ? "Processando..." : "Finalizar Pedido"}
                 </button>
               </form>
-            )}
           </div>
         )}
       </div>

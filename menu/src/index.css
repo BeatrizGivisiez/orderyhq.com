@@ -31,6 +31,26 @@
   };
 }
 
+/* ── Light mode overrides (scoped to .light on the admin root) ─────── */
+.light {
+  --color-bg:          #f8fafc;
+  --color-surface:     #ffffff;
+  --color-surface-2:   #f1f5f9;
+  --color-elevated:    #e2e8f0;
+  --color-content:     #0f172a;
+  --color-muted:       #475569;
+  --color-faint:       #94a3b8;
+  --color-accent:      #16a34a;
+  --color-accent-2:    #22c55e;
+  --color-accent-ink:  #ffffff;
+  --color-warn:        #ea580c;
+  --color-line:        rgba(15,23,42,0.08);
+  --color-line-2:      rgba(15,23,42,0.14);
+  --color-accent-glow: rgba(22,163,74,0.15);
+  --color-accent-soft: rgba(22,163,74,0.10);
+  --color-warn-soft:   rgba(234,88,12,0.10);
+}
+
 @layer utilities {
   .scrollbar-hide {
     -ms-overflow-style: none;
