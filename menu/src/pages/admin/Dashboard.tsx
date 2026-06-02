@@ -266,7 +266,7 @@ export const Dashboard: React.FC = () => {
   );
 
   return (
-    <div className="flex flex-col h-full space-y-6">
+    <div className="flex flex-col md:h-full space-y-6">
       <h2 className="text-xl font-bold tracking-tight text-content">Gerenciador de Pedidos</h2>
 
       {!tenant?.whatsapp && (
@@ -277,28 +277,29 @@ export const Dashboard: React.FC = () => {
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 flex-1 overflow-hidden pb-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 md:flex-1 md:overflow-hidden pb-4">
         {(Object.keys(statusMap) as OrderStatus[]).map((statusKey) => {
           const filteredOrders = orders.filter(o => o.status === statusKey);
           const s = statusMap[statusKey];
 
           return (
-            <div key={statusKey} className="flex flex-col rounded-2xl bg-surface border border-line p-4 overflow-hidden">
-              <h3 className="text-[10px] font-bold text-faint uppercase tracking-wider mb-4 flex items-center">
+            <div key={statusKey} className="flex flex-col rounded-2xl bg-surface border border-line p-4 md:overflow-hidden">
+              <h3 className="text-[10px] font-bold text-faint uppercase tracking-wider mb-3 flex items-center">
                 <span className={`w-2 h-2 rounded-full mr-2 ${s.dot}`}></span>
-                {statusKey === 'recebido' ? 'Pedidos em Andamento' : s.label}
+                {statusKey === 'recebido' ? 'Em Andamento' : s.label}
                 <span className="ml-auto bg-elevated text-faint py-0.5 px-2 rounded-full text-[10px] font-bold">
                   {filteredOrders.length}
                 </span>
               </h3>
 
-              <div className="flex-1 overflow-y-auto space-y-3 pr-1 scrollbar-hide">
+              <div className="md:flex-1 md:overflow-y-auto md:scrollbar-hide space-y-2">
                 {filteredOrders.map(order => (
                   <div
                     key={order.id}
-                    className="bg-surface border border-line rounded-xl p-4 hover:border-accent/30 transition-all flex flex-col cursor-pointer"
+                    className="bg-elevated border border-line rounded-xl p-3 hover:border-accent/30 transition-all cursor-pointer"
                     onClick={() => setSelectedOrder(order)}
                   >
+                    {/* Cabeçalho comum */}
                     <div className="flex justify-between items-start mb-2">
                       <div>
                         <span className="text-[10px] font-bold text-faint uppercase tracking-widest">#{order.id.slice(0, 4)}</span>
@@ -309,50 +310,62 @@ export const Dashboard: React.FC = () => {
                       </span>
                     </div>
 
-                    <div className="flex items-start gap-1.5 mb-2">
-                      <MapPin className="w-3 h-3 text-faint mt-0.5 shrink-0" />
-                      <p className="text-xs text-muted line-clamp-2">{order.customerAddress}</p>
+                    {/* Detalhes — apenas desktop */}
+                    <div className="hidden md:block">
+                      <div className="flex items-start gap-1.5 mb-2">
+                        <MapPin className="w-3 h-3 text-faint mt-0.5 shrink-0" />
+                        <p className="text-xs text-muted line-clamp-2">{order.customerAddress}</p>
+                      </div>
+                      <div className="text-xs text-muted line-clamp-1 mb-1">
+                        {order.items.map(i => `${i.quantity}x ${i.name}`).join(', ')}
+                      </div>
                     </div>
 
-                    <div className="text-xs text-muted line-clamp-1 mb-1">
-                      {order.items.map(i => `${i.quantity}x ${i.name}`).join(', ')}
+                    {/* Total + itens (mobile mostra itens aqui) */}
+                    <div className="flex items-center justify-between mb-2 md:mb-0">
+                      <div className="font-bold text-sm text-content">{formatCurrency(order.total)}</div>
+                      <span className="text-[11px] text-muted md:hidden">
+                        {order.items.length} {order.items.length === 1 ? 'item' : 'itens'} · toque para detalhes
+                      </span>
                     </div>
-                    <div className="font-bold text-sm text-content">{formatCurrency(order.total)}</div>
 
+                    {/* Botões de ação */}
                     <div
-                      className="mt-3 pt-3 border-t border-line space-y-2"
+                      className="mt-2 pt-2 border-t border-line flex gap-1.5 md:flex-col md:space-y-0 md:gap-2"
                       onClick={e => e.stopPropagation()}
                     >
                       {s.next && s.actionIcon && (
                         <button
-                          className={`w-full py-1.5 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition-colors ${s.actionStyle}`}
+                          className={`flex-1 py-1.5 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition-colors ${s.actionStyle}`}
                           onClick={() => updateStatus(order.id, s.next!, order.customerPhone)}
                         >
                           {React.createElement(s.actionIcon, { className: 'w-3.5 h-3.5' })}
-                          {s.actionLabel}
+                          <span className="hidden md:inline">{s.actionLabel}</span>
+                          <span className="md:hidden">{s.actionLabel}</span>
                         </button>
                       )}
                       {order.status === 'finalizado' && (
                         <button
-                          className="w-full py-1.5 bg-accent text-accent-ink hover:bg-accent-2 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition-colors"
+                          className="flex-1 py-1.5 bg-accent text-accent-ink hover:bg-accent-2 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition-colors"
                           onClick={() => archiveOrder(order)}
                         >
                           <Archive className="w-3.5 h-3.5" /> Terminar
                         </button>
                       )}
                       <button
-                        className="w-full py-1.5 bg-accent/8 hover:bg-accent/15 text-accent rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition-colors"
+                        className="py-1.5 px-2.5 bg-accent/8 hover:bg-accent/15 text-accent rounded-lg transition-colors flex items-center justify-center gap-1.5 md:w-full"
                         onClick={() => window.open(`https://wa.me/55${formatPhoneForWA(order.customerPhone)}`, '_blank')}
                       >
-                        <Phone className="w-3.5 h-3.5" /> Contato WhatsApp
+                        <Phone className="w-3.5 h-3.5" />
+                        <span className="hidden md:inline text-xs font-bold">Contato WhatsApp</span>
                       </button>
                     </div>
                   </div>
                 ))}
 
                 {filteredOrders.length === 0 && (
-                  <div className="text-center text-xs font-medium text-faint py-6 border-2 border-dashed border-line rounded-xl">
-                    {statusKey === 'recebido' ? 'Nenhum pedido em andamento.' : 'Nenhum pedido ainda.'}
+                  <div className="text-center text-xs font-medium text-faint py-5 border-2 border-dashed border-line rounded-xl">
+                    Nenhum pedido.
                   </div>
                 )}
               </div>
