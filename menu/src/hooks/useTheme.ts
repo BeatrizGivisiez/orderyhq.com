@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 export function useTheme() {
   const [isDark, setIsDark] = useState(
-    () => localStorage.getItem('adminTheme') === 'dark'
+    () => localStorage.getItem('adminTheme') !== 'light'
   );
 
   const toggle = () => {
