@@ -24,7 +24,7 @@ const NAMES = [
   "Vitor",
 ];
 const DISHES: [string, string, number][] = [
-  ["2× Burger HQ", "Batata rústica", 56.0],
+  ["2× Burger", "Batata rústica", 56.0],
   ["Combo Família", "Refri 2L", 89.9],
   ["Açaí 700ml", "+ 3 adicionais", 32.5],
   ["Marmita Fit", "Frango grelhado", 27.0],
@@ -321,7 +321,11 @@ export const Home: React.FC = () => {
                   </div>
                   <div className="phone-menu">
                     <div className="menu-item">
-                      <span className="thumb" />
+                      <img
+                        className="thumb"
+                        src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=84&h=84&fit=crop&q=80"
+                        alt="Burger HQ"
+                      />
                       <div>
                         <div className="mi-name">Burger HQ</div>
                         <div className="mi-desc">180g · cheddar</div>
@@ -329,7 +333,11 @@ export const Home: React.FC = () => {
                       <span className="mi-price">R$ 28</span>
                     </div>
                     <div className="menu-item">
-                      <span className="thumb" />
+                      <img
+                        className="thumb"
+                        src="https://images.unsplash.com/photo-1561758033-7e924f619b47?w=84&h=84&fit=crop&q=80"
+                        alt="Combo Família"
+                      />
                       <div>
                         <div className="mi-name">Combo Família</div>
                         <div className="mi-desc">4 burgers + fritas</div>
@@ -337,7 +345,11 @@ export const Home: React.FC = () => {
                       <span className="mi-price">R$ 89</span>
                     </div>
                     <div className="menu-item">
-                      <span className="thumb" />
+                      <img
+                        className="thumb"
+                        src="https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=84&h=84&fit=crop&q=80"
+                        alt="Batata rústica"
+                      />
                       <div>
                         <div className="mi-name">Batata rústica</div>
                         <div className="mi-desc">com alecrim</div>

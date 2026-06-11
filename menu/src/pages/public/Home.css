@@ -427,6 +427,8 @@
 .home-landing .menu-item .thumb {
   width: 42px; height: 42px; border-radius: 9px; flex-shrink: 0;
   background: repeating-linear-gradient(45deg, var(--surface-2) 0 6px, var(--elevated) 6px 12px);
+  object-fit: cover;
+  display: block;
 }
 .home-landing .menu-item .mi-name { font-size: 12px; font-weight: 600; }
 .home-landing .menu-item .mi-desc { font-size: 10px; color: var(--faint); }
