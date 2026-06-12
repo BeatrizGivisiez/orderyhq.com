@@ -1,6 +1,6 @@
-# Ordery HQ — Documentação Técnica Completa
+# Ordery HQ — Documentação Técnica
 
-> Plataforma SaaS de cardápio digital com integração WhatsApp e painel multi-tenant.
+> Plataforma SaaS de cardápio digital com painel multi-tenant, integração WhatsApp e gestão de vendas.
 
 ---
 
@@ -8,93 +8,125 @@
 
 1. [Visão Geral](#1-visão-geral)
 2. [Stack Tecnológica](#2-stack-tecnológica)
-3. [Estrutura de Arquivos](#3-estrutura-de-arquivos)
-4. [Arquitetura de Dados (Firestore)](#4-arquitetura-de-dados-firestore)
-5. [Tipos e Interfaces](#5-tipos-e-interfaces)
-6. [Autenticação e Controle de Acesso](#6-autenticação-e-controle-de-acesso)
-7. [Regras de Segurança Firestore](#7-regras-de-segurança-firestore)
-8. [Contextos Globais](#8-contextos-globais)
-9. [Roteamento](#9-roteamento)
-10. [Páginas Públicas](#10-páginas-públicas)
-11. [Painel do Restaurante (Admin)](#11-painel-do-restaurante-admin)
-12. [Painel Master (Super Admin)](#12-painel-master-super-admin)
-13. [Componentes Compartilhados](#13-componentes-compartilhados)
-14. [Integração WhatsApp](#14-integração-whatsapp)
-15. [Sistema de Temas (Whitelabel)](#15-sistema-de-temas-whitelabel)
-16. [Persistência do Carrinho](#16-persistência-do-carrinho)
-17. [Notificações em Tempo Real](#17-notificações-em-tempo-real)
-18. [Utilitários](#18-utilitários)
-19. [Configuração Firebase](#19-configuração-firebase)
+3. [Variáveis de Ambiente](#3-variáveis-de-ambiente)
+4. [Estrutura de Arquivos](#4-estrutura-de-arquivos)
+5. [Arquitetura de Dados (Firestore)](#5-arquitetura-de-dados-firestore)
+6. [Tipos e Interfaces](#6-tipos-e-interfaces)
+7. [Sistema de Temas](#7-sistema-de-temas)
+8. [Autenticação e Controle de Acesso](#8-autenticação-e-controle-de-acesso)
+9. [Regras de Segurança Firestore](#9-regras-de-segurança-firestore)
+10. [Roteamento](#10-roteamento)
+11. [Páginas Públicas](#11-páginas-públicas)
+12. [Painel do Restaurante (Admin)](#12-painel-do-restaurante-admin)
+13. [Painel Master (Super Admin)](#13-painel-master-super-admin)
+14. [Componentes Partilhados](#14-componentes-partilhados)
+15. [Upload de Imagens (Cloudinary)](#15-upload-de-imagens-cloudinary)
+16. [Integração WhatsApp](#16-integração-whatsapp)
+17. [Persistência do Carrinho](#17-persistência-do-carrinho)
+18. [Notificações em Tempo Real](#18-notificações-em-tempo-real)
+19. [Utilitários](#19-utilitários)
 20. [Fluxos Principais](#20-fluxos-principais)
-21. [Variáveis de Ambiente](#21-variáveis-de-ambiente)
 
 ---
 
 ## 1. Visão Geral
 
-O **Ordey HQ** é uma plataforma multi-tenant que permite a restaurantes criar e gerenciar um cardápio digital acessível por link ou QR code. Pedidos feitos pelos clientes chegam em tempo real no painel do restaurante e podem ser encaminhados via WhatsApp com um clique.
+O **Ordery HQ** é uma plataforma multi-tenant que permite a restaurantes criar e gerir um cardápio digital acessível por link ou QR code. Pedidos feitos pelos clientes chegam em tempo real no painel do restaurante e podem ser encaminhados via WhatsApp com um clique. O painel inclui gestão de horários de funcionamento, módulo de vendas e suporte a light/dark mode.
 
-### Perfis de Usuário
+### Perfis de Utilizador
 
 | Perfil | Acesso | Identificação |
 |--------|--------|---------------|
 | **Cliente** | Cardápio público (`/r/:slug`) | Sem autenticação |
 | **Restaurante (Admin)** | Painel admin (`/admin`) | Firebase Auth (e-mail/senha) |
-| **Master (Super Admin)** | Painel master (`/superadmin`) | E-mail fixo: `idallsolucoes@gmail.com` |
+| **Master (Super Admin)** | Painel master (`/superadmin`) | E-mail definido em `VITE_SUPER_ADMIN_EMAIL` |
 
 ---
 
 ## 2. Stack Tecnológica
 
-| Camada | Tecnologia | Versão |
-|--------|-----------|--------|
-| UI Framework | React | 19 |
-| Linguagem | TypeScript | 5.8.2 |
-| Build tool | Vite | 6.2.3 |
-| Estilização | Tailwind CSS | 4.1.14 |
-| Roteamento | React Router DOM | v7 |
-| Backend / DB | Firebase Firestore | 12.x |
-| Autenticação | Firebase Auth | 12.x |
-| Ícones | Lucide React | — |
-| Notificações | react-hot-toast | — |
-| Datas | date-fns (pt-BR) | — |
-| QR Code | qrcode.react | — |
-| Formatação | clsx + tailwind-merge | — |
+| Camada | Tecnologia |
+|--------|-----------|
+| UI Framework | React 19 |
+| Linguagem | TypeScript 5.8 |
+| Build | Vite 6 |
+| Estilização | Tailwind CSS 4 (com `@theme` tokens) |
+| Roteamento | React Router DOM v7 |
+| Base de dados | Firebase Firestore (realtime) |
+| Autenticação | Firebase Auth |
+| Upload de imagens | Cloudinary (unsigned preset) |
+| Ícones | Lucide React |
+| Notificações UI | react-hot-toast |
+| Datas | date-fns (pt-BR) |
+| QR Code | qrcode.react |
 
 ---
 
-## 3. Estrutura de Arquivos
+## 3. Variáveis de Ambiente
+
+Todas as variáveis usam o prefixo `VITE_` (obrigatório no Vite para exposição ao browser).
+
+Ficheiro: `.env` (não commitado — ver `.env.example`)
+
+```env
+# Firebase
+VITE_FIREBASE_API_KEY=
+VITE_FIREBASE_AUTH_DOMAIN=
+VITE_FIREBASE_PROJECT_ID=
+VITE_FIREBASE_APP_ID=
+VITE_FIREBASE_MESSAGING_SENDER_ID=
+VITE_FIREBASE_STORAGE_BUCKET=
+
+# Cloudinary (upload de imagens — plano gratuito)
+VITE_CLOUDINARY_CLOUD=
+VITE_CLOUDINARY_PRESET=
+
+# App
+VITE_SUPER_ADMIN_EMAIL=       # e-mail do master
+VITE_WA_CONTACT=              # número WhatsApp de contacto da plataforma
+```
+
+### Onde cada variável é usada
+
+| Variável | Ficheiro |
+|----------|----------|
+| `VITE_FIREBASE_*` | `src/services/firebase.ts` |
+| `VITE_CLOUDINARY_CLOUD` + `VITE_CLOUDINARY_PRESET` | `src/pages/admin/Settings.tsx` |
+| `VITE_SUPER_ADMIN_EMAIL` | `src/contexts/AuthContext.tsx` |
+| `VITE_WA_CONTACT` | `src/pages/public/Home.tsx` |
+
+> **Nota:** o ficheiro `firebase-applet-config.json` deixou de ser usado. As credenciais Firebase estão exclusivamente no `.env`.
+
+---
+
+## 4. Estrutura de Arquivos
 
 ```
 /
-├── index.html                        # Entry point HTML
-├── vite.config.ts                    # Vite + Tailwind + aliases
-├── tsconfig.json                     # TypeScript config
-├── package.json                      # Dependências e scripts
-├── firebase-applet-config.json       # Credenciais Firebase
-├── firebase-blueprint.json           # Schema das coleções Firestore
+├── .env                              # Variáveis de ambiente (não commitado)
+├── .env.example                      # Template das variáveis
 ├── firestore.rules                   # Regras de segurança Firestore
-├── functions/
-│   └── index.js                      # Cloud Functions (template)
 └── src/
-    ├── main.tsx                      # Ponto de entrada React
     ├── App.tsx                       # Rotas e providers
-    ├── index.css                     # Tailwind + utilitários globais
+    ├── index.css                     # Tailwind @theme tokens + light mode
     ├── types/
     │   └── index.ts                  # Interfaces TypeScript globais
     ├── lib/
-    │   └── utils.ts                  # Funções utilitárias
+    │   ├── utils.ts                  # Funções utilitárias
+    │   └── theme.ts                  # DEFAULT_TENANT_COLOR
+    ├── hooks/
+    │   └── useTheme.ts               # Hook light/dark mode
     ├── services/
-    │   └── firebase.ts               # Inicialização Firebase
+    │   └── firebase.ts               # Inicialização Firebase via env vars
     ├── contexts/
     │   ├── AuthContext.tsx           # Auth + tenant + super-admin
-    │   └── CartContext.tsx           # Carrinho de compras
+    │   └── CartContext.tsx           # Carrinho de compras (localStorage)
     ├── components/
     │   ├── ui/
-    │   │   ├── Button.tsx            # Botão reutilizável
-    │   │   └── Input.tsx             # Input reutilizável
+    │   │   ├── Button.tsx            # Botão reutilizável (tema dark/light)
+    │   │   └── Input.tsx             # Input reutilizável (tema dark/light)
     │   ├── admin/
-    │   │   ├── AdminLayout.tsx       # Shell do painel admin
+    │   │   ├── AdminLayout.tsx       # Shell do painel (sidebar + header + toggle tema)
     │   │   └── MenuQrCode.tsx        # Componente QR code
     │   ├── superadmin/
     │   │   └── SuperAdminLayout.tsx  # Shell do painel master
@@ -103,72 +135,93 @@ O **Ordey HQ** é uma plataforma multi-tenant que permite a restaurantes criar e
     └── pages/
         ├── public/
         │   ├── Home.tsx              # Landing page
+        │   ├── Home.css              # Estilos scoped (usa var(--color-*))
         │   └── RestaurantMenu.tsx    # Cardápio público
         ├── admin/
-        │   ├── Login.tsx             # Login / cadastro
-        │   ├── Dashboard.tsx         # Kanban de pedidos
+        │   ├── Login.tsx             # Login (sem registo)
+        │   ├── Login.css             # Estilos scoped (usa var(--color-*))
+        │   ├── Dashboard.tsx         # Kanban de pedidos + arquivar vendas
         │   ├── MenuManager.tsx       # Gestão do cardápio
-        │   └── Settings.tsx          # Configurações do restaurante
+        │   ├── Settings.tsx          # Configurações + upload Cloudinary
+        │   ├── Times.tsx             # Horários de funcionamento
+        │   └── Sales.tsx             # Relatório de vendas
         └── superadmin/
-            └── SuperAdminDashboard.tsx # Painel master
+            └── SuperAdminDashboard.tsx
 ```
 
 ---
 
-## 4. Arquitetura de Dados (Firestore)
-
-O banco usa o **Firebase Firestore** no plano Spark (gratuito), banco de dados padrão (`(default)`).
-
-### Coleções
+## 5. Arquitetura de Dados (Firestore)
 
 ```
-tenants/                              # Coleção raiz — um doc por restaurante
+tenants/                          # Um documento por restaurante
   {tenantId}/
-    ├── [campos do tenant]
-    ├── categories/                   # Subcoleção de categorias
-    │   └── {categoryId}/
-    │       ├── name: string
-    │       └── order: number
-    ├── products/                     # Subcoleção de produtos
-    │   └── {productId}/
-    │       ├── name: string
-    │       ├── description: string
-    │       ├── price: number
-    │       ├── promotionalPrice: number  # 0 = sem promoção
-    │       ├── imageUrl: string
-    │       ├── categoryId: string
-    │       └── active: boolean
-    └── orders/                       # Subcoleção de pedidos
-        └── {orderId}/
-            ├── customerName: string
-            ├── customerPhone: string
-            ├── customerAddress: string
-            ├── items: OrderItem[]
-            ├── total: number
-            ├── status: OrderStatus
-            └── createdAt: number     # timestamp ms
+    ├── name: string
+    ├── slug: string              # URL única do cardápio
+    ├── whatsapp: string
+    ├── logoUrl: string           # URL Cloudinary
+    ├── themeColor: string        # Hex (ex: #f97316)
+    ├── schedule: WeekSchedule    # Horários por dia da semana
+    ├── ownerId: string           # UID Firebase Auth
+    ├── createdAt: number         # timestamp ms
+    │
+    ├── categories/{id}
+    │   ├── name: string
+    │   └── order: number
+    │
+    ├── products/{id}
+    │   ├── name: string
+    │   ├── description: string
+    │   ├── price: number
+    │   ├── promotionalPrice: number   # 0 = sem promoção
+    │   ├── imageUrl: string
+    │   ├── categoryId: string
+    │   └── active: boolean
+    │
+    ├── orders/{id}
+    │   ├── customerName: string
+    │   ├── customerPhone: string
+    │   ├── customerAddress: string
+    │   ├── items: OrderItem[]
+    │   ├── total: number
+    │   ├── status: OrderStatus        # recebido | preparando | saiu | finalizado
+    │   ├── archived: boolean          # true = arquivado nas vendas
+    │   └── createdAt: number
+    │
+    └── sales/{id}                     # Criado ao clicar "Terminar" no Dashboard
+        ├── orderId: string
+        ├── customerName: string
+        ├── customerPhone: string
+        ├── customerAddress: string
+        ├── items: OrderItem[]
+        ├── total: number
+        ├── createdAt: number          # quando o pedido foi feito
+        └── completedAt: number        # quando foi arquivado
 ```
-
-### Campos do Documento Tenant
-
-| Campo | Tipo | Descrição |
-|-------|------|-----------|
-| `ownerId` | string | UID do Firebase Auth do dono |
-| `name` | string | Nome do restaurante |
-| `slug` | string | URL única (ex: `pizzaria-do-ze`) |
-| `whatsapp` | string | Número com DDI (ex: `5511999999999`) |
-| `logoUrl` | string | URL pública da logo |
-| `themeColor` | string | Cor hex do tema (ex: `#f97316`) |
-| `isOpen` | boolean | Restaurante aberto/fechado |
-| `createdAt` | number | Timestamp de criação (ms) |
 
 ---
 
-## 5. Tipos e Interfaces
+## 6. Tipos e Interfaces
 
 Definidos em `src/types/index.ts`.
 
 ```typescript
+interface DaySchedule {
+  open: boolean;
+  from: string;   // "09:30"
+  to: string;     // "18:00"
+}
+
+interface WeekSchedule {
+  sun: DaySchedule;
+  mon: DaySchedule;
+  tue: DaySchedule;
+  wed: DaySchedule;
+  thu: DaySchedule;
+  fri: DaySchedule;
+  sat: DaySchedule;
+}
+
 interface Tenant {
   id: string;
   ownerId: string;
@@ -177,15 +230,11 @@ interface Tenant {
   whatsapp: string;
   logoUrl?: string;
   themeColor?: string;
-  isOpen?: boolean;
+  schedule?: WeekSchedule;
   createdAt: number;
 }
 
-interface Category {
-  id: string;
-  name: string;
-  order: number;
-}
+interface Category { id: string; name: string; order: number; }
 
 interface Product {
   id: string;
@@ -193,17 +242,12 @@ interface Product {
   name: string;
   description: string;
   price: number;
-  promotionalPrice?: number;   // 0 ou undefined = sem promoção
+  promotionalPrice?: number;
   imageUrl?: string;
   active: boolean;
 }
 
-interface OrderItem {
-  productId: string;
-  name: string;
-  price: number;
-  quantity: number;
-}
+interface OrderItem { productId: string; name: string; price: number; quantity: number; }
 
 type OrderStatus = 'recebido' | 'preparando' | 'saiu' | 'finalizado';
 
@@ -216,518 +260,431 @@ interface Order {
   total: number;
   status: OrderStatus;
   createdAt: number;
+  archived?: boolean;
+}
+
+interface Sale {
+  id: string;
+  orderId: string;
+  customerName: string;
+  customerPhone: string;
+  customerAddress: string;
+  items: OrderItem[];
+  total: number;
+  createdAt: number;
+  completedAt: number;
 }
 ```
 
 ---
 
-## 6. Autenticação e Controle de Acesso
+## 7. Sistema de Temas
 
-Gerenciado pelo `AuthContext` (`src/contexts/AuthContext.tsx`).
+### Tokens globais (`src/index.css`)
 
-### Fluxo de Autenticação
+O Tailwind 4 usa `@theme` para definir tokens que geram classes utilitárias e CSS custom properties.
 
-1. `onAuthStateChanged` escuta mudanças de sessão do Firebase Auth.
-2. Ao autenticar, busca o documento `tenants/{uid}` para carregar os dados do restaurante.
-3. Compara o e-mail do usuário com `SUPER_ADMIN_EMAIL` para definir `isSuperAdmin`.
+```css
+@theme {
+  --color-bg: #0a0d0b;
+  --color-surface: #12160f;
+  --color-surface-2: #181d15;
+  --color-elevated: #1c221a;
+  --color-content: #eef2ec;
+  --color-muted: #98a297;
+  --color-faint: #6b746a;
+  --color-accent: #6fd08c;
+  --color-accent-2: #8fe0a4;
+  --color-accent-ink: #07140d;
+  --color-warn: #d98a6a;
+  --color-line: rgba(220,255,220,0.085);
+  --color-line-2: rgba(220,255,220,0.14);
+  /* ... */
+}
+```
 
-### Dados Expostos pelo Contexto
+Classes geradas: `bg-bg`, `bg-surface`, `text-accent`, `border-line`, etc.
+
+### Light Mode
+
+Definido em `.light { ... }` no `index.css`. Aplicado via classe no root div do `AdminLayout` pelo hook `useTheme`.
+
+```typescript
+// src/hooks/useTheme.ts
+const { isDark, toggle } = useTheme();
+// persiste em localStorage key 'adminTheme'
+// default: light mode
+```
+
+O botão Sol/Lua no header desktop alterna o tema. **As páginas públicas (Home, Login, Cardápio) são sempre dark** — o light mode afeta apenas o painel admin.
+
+### Tema do Cardápio (Tenant)
+
+Cada restaurante tem `themeColor` (hex) que personaliza o header, botões e preços do cardápio público. Fallback: `DEFAULT_TENANT_COLOR = '#f97316'` (`src/lib/theme.ts`).
+
+### CSS dos ficheiros públicos
+
+`Home.css` e `Login.css` são scoped (`.home-landing`, `.auth-page`) e referenciam `var(--color-*)` gerados pelo `@theme`, garantindo que qualquer mudança nos tokens seja propagada automaticamente.
+
+---
+
+## 8. Autenticação e Controle de Acesso
+
+### Fluxo
+
+1. `onAuthStateChanged` escuta mudanças de sessão.
+2. Ao autenticar, carrega `tenants/{uid}` via `getDoc`.
+3. Compara e-mail com `VITE_SUPER_ADMIN_EMAIL` → define `isSuperAdmin`.
+
+### Hook `useAuth()`
 
 | Propriedade | Tipo | Descrição |
 |-------------|------|-----------|
-| `user` | `User \| null` | Objeto do Firebase Auth |
-| `tenant` | `Tenant \| null` | Dados do restaurante logado |
-| `loading` | `boolean` | Auth ainda carregando |
-| `isSuperAdmin` | `boolean` | `true` se e-mail = master |
-| `logout()` | `Promise<void>` | Desloga e limpa sessão |
+| `user` | `User \| null` | Objeto Firebase Auth |
+| `tenant` | `Tenant \| null` | Dados do restaurante |
+| `loading` | `boolean` | Auth a carregar |
+| `isSuperAdmin` | `boolean` | true se e-mail = master |
+| `logout()` | `Promise<void>` | Desloga |
 | `refreshTenant()` | `Promise<void>` | Recarrega dados do tenant |
 
 ### Proteção de Rotas
 
 - **AdminLayout**: redireciona para `/admin/login` se não autenticado.
-- **SuperAdminLayout**: redireciona para `/admin/login` se não autenticado; redireciona para `/admin` se autenticado mas não for super-admin.
-- Após login, super-admin é encaminhado para `/superadmin`; demais para `/admin`.
+- **SuperAdminLayout**: redireciona para `/admin` se não for super-admin.
+- Não existe registo público — contas criadas manualmente ou por fluxo interno.
 
 ---
 
-## 7. Regras de Segurança Firestore
+## 9. Regras de Segurança Firestore
 
-Arquivo: `firestore.rules`
+Ficheiro: `firestore.rules`
 
 | Operação | Quem pode |
 |----------|-----------|
-| Ler tenant | Qualquer pessoa |
+| Ler tenant | Qualquer pessoa (necessário para o cardápio público) |
 | Escrever tenant | Apenas o dono (`request.auth.uid == resource.data.ownerId`) |
-| Ler categorias/produtos | Qualquer pessoa |
-| Escrever categorias/produtos | Apenas o dono do tenant pai |
-| Criar pedido | Qualquer pessoa (clientes não autenticados) |
-| Ler/atualizar/deletar pedido | Apenas o dono do tenant |
-
-> **Importante:** o super-admin não tem acesso especial via Firestore rules. Ele só lê a coleção raiz `tenants` (que é pública para leitura). Pedidos de outros restaurantes são inacessíveis mesmo para o master.
-
----
-
-## 8. Contextos Globais
-
-### AuthContext (`src/contexts/AuthContext.tsx`)
-
-Responsável por toda autenticação e dados do tenant logado. Expõe `useAuth()` hook para consumo nos componentes.
-
-### CartContext (`src/contexts/CartContext.tsx`)
-
-Gerencia o carrinho de compras do cliente.
-
-| Método | Descrição |
-|--------|-----------|
-| `addItem(product)` | Adiciona produto; usa `promotionalPrice` se disponível |
-| `removeItem(productId)` | Remove item do carrinho |
-| `updateQuantity(productId, qty)` | Atualiza quantidade; qty ≤ 0 remove |
-| `clearCart()` | Esvazia o carrinho |
-
-- **Persistência**: salvo no `localStorage` com chave `@SaasMenu:cart`.
-- **Total**: calculado automaticamente com base em `price * quantity`.
+| Ler produtos/categorias | Qualquer pessoa |
+| Escrever produtos/categorias | Apenas o dono do tenant pai |
+| Criar pedido | Qualquer pessoa (clientes sem conta) |
+| Ler/atualizar pedido | Apenas o dono do tenant |
+| Ler/escrever sales | Apenas o dono do tenant |
 
 ---
 
-## 9. Roteamento
-
-Configurado em `src/App.tsx` com React Router v7.
+## 10. Roteamento
 
 ```
-/                          → Home (landing page)
-/r/:slug                   → RestaurantMenu (cardápio público)
-/admin/login               → Login / Cadastro
-/admin                     → Dashboard (pedidos) [protegido]
-/admin/menu                → MenuManager (cardápio) [protegido]
-/admin/settings            → Settings (configurações) [protegido]
-/superadmin                → SuperAdminDashboard [protegido + master]
+/                    → Home (landing page)
+/r/:slug             → Cardápio público do restaurante
+/admin/login         → Login
+/admin               → Dashboard (Kanban de pedidos)
+/admin/menu          → MenuManager (gestão do cardápio)
+/admin/times         → Times (horários de funcionamento)
+/admin/sales         → Sales (relatório de vendas)
+/admin/settings      → Settings (configurações)
+/superadmin          → SuperAdminDashboard
 ```
 
-Providers aninhados (de fora para dentro):
-```
-AuthProvider → CartProvider → Router → Toaster
-```
+**Nav do Admin (sidebar):** Pedidos · Cardápio · Horários · Vendas · Configurações
 
 ---
 
-## 10. Páginas Públicas
+## 11. Páginas Públicas
 
-### 10.1 Home (`/`)
+### 11.1 Home (`/`)
 
-Landing page de apresentação do produto.
+Landing page da plataforma.
 
-**Seções:**
-- Header com logo e botões de Login / Cadastro.
-- Hero: headline principal, descrição, CTA "Criar meu cardápio grátis".
-- Features: 3 cards (Cardápio PWA, Painel em tempo real, WhatsApp com 1 clique).
-- Footer com copyright.
+- Nav com logo e botão "Entrar" (sem "Criar conta" — registo é interno).
+- Hero com Kanban animado + mockup de cardápio em tempo real.
+- Secções: Problema, Pilares, Painel ao vivo, Como funciona, Preços, CTA.
+- Número de WhatsApp de contacto via `VITE_WA_CONTACT`.
 
----
+### 11.2 Cardápio Público (`/r/:slug`)
 
-### 10.2 Cardápio do Restaurante (`/r/:slug`)
-
-Página pública acessada pelo cliente do restaurante.
+**Carregamento:** `onSnapshot` em tenant (por slug), products e categories.
 
 **Funcionalidades:**
-
-**Carregamento de dados (tempo real):**
-- `onSnapshot` no tenant via `slug` — atualiza tema/nome ao vivo.
-- `onSnapshot` em `products` e `categories` do tenant encontrado.
-
-**Filtros de produtos:**
-- **Todos** — exibe todos os produtos, com produtos em promoção primeiro.
-- **Promoção** — exibe apenas produtos com `promotionalPrice > 0`. Aparece somente se houver ao menos um produto em oferta.
-- **Categorias** — geradas dinamicamente; produtos da categoria filtrados e ordenados com promoções na frente.
-
-**Exibição de produto:**
-- Imagem (ou ícone placeholder).
-- Nome + badge de desconto (`-X%`) se em promoção.
-- Descrição (limitada a 2 linhas).
-- Preço promocional destacado + preço original riscado.
-- Botão `+` para adicionar ao carrinho (visível apenas se restaurante aberto).
-
-**Estado fechado:**
-- Banner vermelho "Restaurante Fechado no Momento".
-- Botão `+` e sacola ocultos.
-
-**Carrinho:**
-- Ícone de sacola com contagem de itens no header.
+- Header com logo, nome e WhatsApp do restaurante.
+- Filtros: Todos, Promoção, categorias dinâmicas.
+- Produtos ordenados com promoções primeiro.
+- Banner "Fechado no momento" automático baseado no schedule (com dica da próxima abertura).
+- Banner dispensável com botão X.
+- Botão `+` e sacola só visíveis quando aberto (baseado em schedule).
 - Barra de checkout fixa no rodapé quando há itens.
-- Abre `CartModal` ao clicar.
+
+**Lógica de horário:**
+```typescript
+// Verifica se o restaurante está aberto agora
+const scheduleStatus = tenant.schedule ? getScheduleStatus(tenant.schedule) : null;
+const isClosed = scheduleStatus !== null && !scheduleStatus.open;
+```
 
 ---
 
-## 11. Painel do Restaurante (Admin)
+## 12. Painel do Restaurante (Admin)
 
-Acessível via `/admin`. Requer autenticação.
+### 12.1 Login (`/admin/login`)
 
-### 11.1 Login / Cadastro (`/admin/login`)
-
-**Modo Login:**
+Apenas login — sem registo público.
 - Campos: e-mail, senha.
+- Recuperação de senha via `sendPasswordResetEmail`.
+- Mensagens de erro específicas por código Firebase.
 - Redireciona master para `/superadmin`, demais para `/admin`.
 
-**Modo Cadastro:**
-- Campos: e-mail, nome do restaurante, slug (URL exclusiva), senha.
-- Cria conta no Firebase Auth.
-- Cria documento em `tenants/{uid}` com dados iniciais.
-- Redireciona para `/admin/settings` para completar configuração.
-- Slug: apenas letras minúsculas, números e hífens.
+### 12.2 Dashboard — Kanban de Pedidos (`/admin`)
 
----
+**4 colunas:** Recebido · Em Preparo · Saiu para Entrega · Finalizado
 
-### 11.2 Dashboard — Gestão de Pedidos (`/admin`)
+Pedidos com `archived: true` são filtrados do kanban.
 
-Painel Kanban com 4 colunas de status.
+**Fluxo de status:**
 
-**Colunas de status:**
+| De | Para | Botão | Mensagem WhatsApp |
+|----|------|-------|------------------|
+| recebido | preparando | PREPARAR | "Seu pedido já está em preparo 🍔🔥" |
+| preparando | saiu | DESPACHAR | "Seu pedido saiu para entrega 🚀" |
+| saiu | finalizado | CONCLUIR | "Pedido finalizado! Obrigado pela preferência 🙏" |
+| finalizado | — | **TERMINAR** | — |
 
-| Status | Próxima ação | Mensagem WhatsApp |
-|--------|-------------|-------------------|
-| `recebido` | → Preparando | "Seu pedido foi confirmado e está sendo preparado!" |
-| `preparando` | → Saiu para entrega | "Seu pedido saiu para entrega!" |
-| `saiu` | → Finalizado | "Seu pedido foi entregue. Obrigado!" |
-| `finalizado` | — | — |
+**Botão TERMINAR (coluna Finalizado):**
+1. Cria documento em `tenants/{id}/sales` com `completedAt`.
+2. Marca o pedido como `archived: true`.
+3. Pedido desaparece do kanban.
+4. Fica disponível na página Vendas.
 
-**Funcionalidades:**
-- Listener `onSnapshot` em `orders` do tenant, ordenados por `createdAt desc`.
-- Alerta sonoro (Web Audio API) ao receber novo pedido.
-- Notificação do browser (solicita permissão na primeira vez).
-- Clique no card do pedido abre **OrderDetailModal**.
+**Notificações:** som (Web Audio API) + notificação browser ao receber novo pedido.
 
-**OrderDetailModal:**
-- ID do pedido (últimos 6 chars), data/hora formatada.
-- Dados do cliente: nome, telefone, endereço.
-- Lista de itens com quantidade e subtotal.
-- Total do pedido.
-- Badge de status atual.
-- Botão de ação para avançar status + envio opcional de WhatsApp.
-- Botão "Contato WhatsApp" abre conversa direta.
+### 12.3 Cardápio (`/admin/menu`)
 
----
+- Vistas lista/grid alternáveis.
+- Filtro por categoria.
+- CRUD de produtos: nome, descrição, preço, preço promocional, imagem (URL), categoria.
+- CRUD de categorias inline no formulário de produto.
 
-### 11.3 Gestão do Cardápio (`/admin/menu`)
+### 12.4 Horários (`/admin/times`)
 
-**Visualizações:**
-- **Lista**: uma linha por produto, compacta.
-- **Grid**: cards com imagem, alternável via botão.
+- Tabela com os 7 dias da semana.
+- Por dia: checkbox "Fechado" + inputs hora de abertura/fecho.
+- Inputs desabilitados quando o dia está fechado.
+- Guarda `schedule: WeekSchedule` no documento do tenant.
+- Chaves em inglês: `sun`, `mon`, `tue`, `wed`, `thu`, `fri`, `sat`.
 
-**Filtros:**
-- Barra de categorias (Todos + cada categoria cadastrada).
+### 12.5 Vendas (`/admin/sales`)
 
-**Gestão de Produtos:**
-- Formulário modal com campos:
-  - Nome, descrição, preço, preço promocional.
-  - URL da imagem (com preview ao vivo).
-  - Categoria (select com as categorias do tenant).
-- Validação: preço promocional deve ser menor que o preço original.
-- Salvo em `tenants/{uid}/products/{id}`.
-- Ações: criar, editar, excluir (com confirmação).
+Relatório dos pedidos arquivados via "Terminar".
 
-**Gestão de Categorias:**
-- Seção inline no MenuManager.
-- Criar nova categoria (nome).
-- Excluir categoria existente.
-- Salvo em `tenants/{uid}/categories/{id}`.
+**Filtros de período:** Hoje · Semana · Mês · Ano
 
----
+**Métricas:**
+- Faturamento total
+- Número de pedidos
+- Ticket médio
 
-### 11.4 Configurações (`/admin/settings`)
+**Top 5 produtos** mais vendidos (por quantidade + receita no período).
 
-**Campos configuráveis:**
+**Lista de pedidos** ordenada por `completedAt desc`, com pesquisa por cliente ou produto.
+
+### 12.6 Configurações (`/admin/settings`)
 
 | Campo | Descrição |
 |-------|-----------|
-| Status (aberto/fechado) | Toggle booleano |
-| Nome do restaurante | Exibido no cardápio público |
+| Nome | Exibido no cardápio público |
 | Slug | URL exclusiva (`/r/{slug}`) |
 | WhatsApp | Número para receber pedidos |
-| URL da logo | Imagem exibida no header do cardápio |
-| Cor do tema | Hex picker com preview RGB |
+| Cor do tema | Hex picker — personaliza o cardápio público |
+| Logo | Upload direto via Cloudinary (com barra de progresso) |
 
-- Salvo via `updateDoc` em `tenants/{uid}`.
-- Exibe URL do cardápio ao vivo.
-- Componente `MenuQrCode` com QR code e botão de copiar link.
-
----
-
-## 12. Painel Master (Super Admin)
-
-Acessível via `/superadmin`. Exclusivo para `idallsolucoes@gmail.com`.
-
-### SuperAdminDashboard
-
-**Métricas (cards superiores):**
-
-| Card | O que mostra |
-|------|-------------|
-| Total clientes | Quantidade de tenants cadastrados |
-| Abertos agora | `isOpen !== false` |
-| Fechados agora | `isOpen === false` |
-| Novos este mês | `createdAt` no mês/ano atual |
-
-**Tabela de Restaurantes:**
-
-| Coluna | Visibilidade |
-|--------|-------------|
-| Restaurante (logo + nome + whatsapp) | Sempre |
-| Slug | sm+ |
-| Data de cadastro | md+ |
-| Status (Aberto/Fechado) | Sempre |
-| Link do cardápio | Sempre |
-
-- Busca em tempo real via `onSnapshot` na coleção `tenants` (sem `orderBy` — ordenação feita no cliente por `createdAt desc` para evitar necessidade de índice Firestore).
-- Ícone de link externo abre `/r/{slug}` em nova aba.
+- QR code do cardápio com botão de copiar link.
+- Logo: preview ao vivo + botão X para remover.
 
 ---
 
-## 13. Componentes Compartilhados
+## 13. Painel Master (Super Admin)
+
+Acessível via `/superadmin`. Exclusivo para `VITE_SUPER_ADMIN_EMAIL`.
+
+**Métricas:** total de restaurantes cadastrados, novos este mês.
+
+**Tabela de restaurantes:** logo, nome, WhatsApp, slug, data de cadastro, link para o cardápio.
+
+---
+
+## 14. Componentes Partilhados
 
 ### Button (`src/components/ui/Button.tsx`)
 
 ```typescript
 // Variantes: primary | secondary | outline | danger | ghost
 // Tamanhos: sm | md | lg
-// Props extras: isLoading (spinner), disabled
-<Button variant="primary" size="md" isLoading={false}>
-  Texto
-</Button>
+// Props extras: isLoading (spinner)
+<Button variant="primary" size="md" isLoading={false}>Texto</Button>
 ```
+
+Cores via tokens do tema (`bg-accent`, `text-accent-ink`, etc.).
 
 ### Input (`src/components/ui/Input.tsx`)
 
 ```typescript
-// Props: label?, error?, + todos os HTMLInputAttributes
 <Input label="E-mail" type="email" error="Campo obrigatório" />
 ```
 
-### AdminLayout (`src/components/admin/AdminLayout.tsx`)
+Dark-themed por defeito. Para uso em contexto público (light), passar `className` com overrides de cor.
 
-- Sidebar desktop (w-64) com logo, nav e avatar do usuário.
-- Bottom nav mobile com ícones.
-- Nav items: Pedidos, Cardápio, Configurações.
-- Botão de logout e link para o cardápio público.
+### AdminLayout
 
-### SuperAdminLayout (`src/components/superadmin/SuperAdminLayout.tsx`)
+- Sidebar desktop com logo, nav e toggle de tema (Sol/Lua).
+- Bottom nav mobile.
+- `useTheme()` aplica classe `.light` no root div.
 
-- Mesmo padrão visual do AdminLayout.
-- Badge "Super Admin" em laranja.
-- Nav único: Restaurantes.
-- Header mostra e-mail do usuário master.
+### CartModal
 
-### MenuQrCode (`src/components/admin/MenuQrCode.tsx`)
-
-- QR code gerado client-side (biblioteca `qrcode.react`).
-- URL: `{window.location.origin}/r/{slug}`.
-- Botão de copiar link com toast de confirmação.
-
-### CartModal (`src/components/public/CartModal.tsx`)
-
-Drawer deslizante à direita (animação CSS `slide-in-right`).
-
-**Seções:**
-1. **Header**: título "Seu Pedido" + botão fechar.
-2. **Lista de itens**: nome, preço unitário, controles de quantidade (−/+), botão remover.
-3. **Total**: soma de `price * quantity`.
-4. **Formulário de checkout**:
-   - Nome do cliente (obrigatório).
-   - Telefone (obrigatório).
-   - Endereço de entrega (obrigatório).
-5. **Botão "Fazer Pedido"**: salva pedido no Firestore e abre WhatsApp.
-
-**Todas as cores** (botões, total, fundo do header) usam `tenant.themeColor`.
+- Drawer deslizante à direita (`animate-slide-in-right`).
+- Inputs com overrides para tema claro (contexto público).
+- Cores dos botões e totais via `tenant.themeColor`.
 
 ---
 
-## 14. Integração WhatsApp
+## 15. Upload de Imagens (Cloudinary)
 
-### Fluxo do Pedido (Cliente → Restaurante)
+Upload direto do browser sem Firebase Storage (evita plano Blaze).
 
-1. Cliente confirma carrinho no `CartModal`.
-2. Pedido salvo em `tenants/{tenantId}/orders/{orderId}` com status `recebido`.
-3. WhatsApp abre com mensagem pré-preenchida para o número do restaurante:
+**Configuração necessária:**
+1. Conta em cloudinary.com (gratuita — 25 GB).
+2. Upload preset em modo **Unsigned**.
+3. Definir `VITE_CLOUDINARY_CLOUD` e `VITE_CLOUDINARY_PRESET` no `.env`.
 
+**Fluxo:**
 ```
-Olá! Gostaria de fazer um pedido:
-
-- 2x Pizza Margherita – R$ 59,80
-- 1x Coca-Cola – R$ 8,00
-
-*Total: R$ 67,80*
-
-*Nome:* João Silva
-*Telefone:* 11999999999
-*Endereço:* Rua das Flores, 123
+Utilizador seleciona ficheiro
+→ XHR POST para api.cloudinary.com/v1_1/{cloud}/image/upload
+→ Barra de progresso via evento xhr.upload.progress
+→ URL `secure_url` devolvido pelo Cloudinary
+→ Preview atualizado no Settings
+→ URL guardado no Firestore ao clicar "Salvar"
 ```
 
-URL gerada: `https://wa.me/{whatsapp}?text={encodedMessage}`
-
-### Fluxo de Status (Restaurante → Cliente)
-
-Ao avançar o status de um pedido, o admin pode enviar notificação WhatsApp ao cliente:
-
-| Status | Mensagem enviada |
-|--------|-----------------|
-| preparando | "Seu pedido foi confirmado e está sendo preparado!" |
-| saiu | "Seu pedido saiu para entrega!" |
-| finalizado | "Seu pedido foi entregido. Obrigado!" |
-
-Utilitário `formatPhoneForWA(phone)` remove caracteres não-numéricos antes de montar a URL.
+**Limitações aceites:**
+- Máx. 5 MB por imagem.
+- Formatos: PNG, JPG, WEBP (`image/*`).
+- `public_id` no formato `logos_{tenant.id}` (sobrescreve ao trocar logo).
 
 ---
 
-## 15. Sistema de Temas (Whitelabel)
+## 16. Integração WhatsApp
 
-Cada restaurante pode personalizar sua cor de tema (`themeColor`).
+### Pedido (Cliente → Restaurante)
 
-**Onde é aplicada:**
-- Header do cardápio público (background).
-- Botões de filtro de categoria (ativo).
-- Botão `+` de adicionar ao carrinho.
-- Preço do produto.
-- Contagem de itens na sacola.
-- Toda a interface do `CartModal`.
-- Total no rodapé de checkout.
+```
+Pedido confirmado no CartModal
+→ addDoc em tenants/{id}/orders (status: recebido)
+→ Abre wa.me/{whatsapp}?text={mensagem pré-formatada}
+```
 
-**Padrão:** `#f97316` (orange-500) caso não configurado.
+### Notificação de Status (Admin → Cliente)
 
-A cor é carregada via `onSnapshot` no tenant, então mudanças em **Configurações** refletem instantaneamente no cardápio público sem reload.
+Ao avançar o status, abre WhatsApp com mensagem automática para o cliente.
+
+### Contacto direto
+
+Botão "Contato WhatsApp" nos cards do Dashboard abre conversa direta.
+
+Utilitário: `formatPhoneForWA(phone)` — remove não-dígitos.
 
 ---
 
-## 16. Persistência do Carrinho
+## 17. Persistência do Carrinho
 
 - Chave localStorage: `@SaasMenu:cart`.
-- O carrinho persiste entre reloads da página.
-- **Atenção:** o carrinho é global (não separado por restaurante). Recomendável limpar ao trocar de restaurante.
-- Preço armazenado: `promotionalPrice` se existir, caso contrário `price`.
+- Persiste entre reloads.
+- Carrinho global (não separado por tenant).
+- Preço armazenado: `promotionalPrice` se disponível, senão `price`.
 
 ---
 
-## 17. Notificações em Tempo Real
+## 18. Notificações em Tempo Real
 
-### Novos Pedidos
+**Novos pedidos no Dashboard:**
+1. `onSnapshot` detecta documentos adicionados com status `recebido`.
+2. Toca beep sintético (Web Audio API).
+3. Notificação nativa do browser (pede permissão na primeira vez).
 
-O Dashboard escuta `onSnapshot` nos pedidos e detecta documentos novos comparando com o array anterior.
-
-**Ao detectar novo pedido:**
-1. Toca som gerado por Web Audio API (beep sintético).
-2. Exibe notificação nativa do browser (se permissão concedida).
-3. O pedido aparece na coluna "Recebido" imediatamente.
-
-**Permissão de notificação:** solicitada automaticamente ao carregar o Dashboard pela primeira vez.
+**Cardápio e pedidos:** atualizados em tempo real via `onSnapshot` sem reload.
 
 ---
 
-## 18. Utilitários
+## 19. Utilitários
 
-Arquivo: `src/lib/utils.ts`
+### `src/lib/utils.ts`
 
-| Função | Uso |
-|--------|-----|
-| `cn(...classes)` | Mescla classes Tailwind com deduplicação (`clsx` + `tailwind-merge`) |
-| `formatCurrency(value)` | Formata número em BRL: `R$ 1.234,56` |
-| `formatPhoneForWA(phone)` | Remove tudo exceto dígitos para montar URL WhatsApp |
+| Função | Descrição |
+|--------|-----------|
+| `cn(...classes)` | Merge de classes Tailwind (`clsx` + `tailwind-merge`) |
+| `formatCurrency(value)` | `R$ 1.234,56` |
+| `formatPhoneForWA(phone)` | Remove não-dígitos para URL WhatsApp |
 
----
+### `src/lib/theme.ts`
 
-## 19. Configuração Firebase
-
-### firebase-applet-config.json
-
-```json
-{
-  "projectId": "saas-menu-idall",
-  "appId": "...",
-  "apiKey": "...",
-  "authDomain": "saas-menu-idall.firebaseapp.com",
-  "storageBucket": "saas-menu-idall.appspot.com",
-  "messagingSenderId": "..."
-}
+```typescript
+export const DEFAULT_TENANT_COLOR = '#f97316';
 ```
 
-> **Banco de dados:** `(default)` — plano Spark (gratuito). Não usar `firestoreDatabaseId` para não conectar ao banco Enterprise.
+Usado como fallback para `tenant.themeColor` em todo o lado.
 
-### Cloud Functions (template)
+### `src/hooks/useTheme.ts`
 
-Arquivo: `functions/index.js`
-
-- `onTenantCreated`: trigger em novo documento na coleção `tenants`. Pronto para enviar e-mail de boas-vindas.
-- `cleanupOldOrders`: função agendada (comentada) para limpeza de pedidos finalizados.
+```typescript
+const { isDark, toggle } = useTheme();
+// isDark: boolean — default false (light mode)
+// toggle: () => void — persiste em localStorage 'adminTheme'
+```
 
 ---
 
 ## 20. Fluxos Principais
 
-### 20.1 Cadastro de Novo Restaurante
-
-```
-Cliente acessa /admin/login?mode=register
-→ Preenche e-mail, senha, nome, slug
-→ createUserWithEmailAndPassword (Firebase Auth)
-→ setDoc em tenants/{uid} com dados iniciais
-→ Redireciona para /admin/settings
-→ Admin configura tema, logo, WhatsApp
-```
-
-### 20.2 Recebimento de Pedido
+### Recebimento de Pedido
 
 ```
 Cliente acessa /r/{slug}
-→ Visualiza cardápio (real-time)
+→ Verifica schedule → exibe banner se fechado
 → Adiciona itens ao carrinho
-→ Abre CartModal → preenche dados
-→ addDoc em tenants/{uid}/orders
+→ Preenche dados no CartModal
+→ addDoc em orders (status: recebido)
 → WhatsApp abre para o restaurante
-→ Dashboard do admin exibe pedido em "Recebido"
-→ Som + notificação no browser do admin
+→ Dashboard exibe pedido em "Recebido" + som + notificação
 ```
 
-### 20.3 Progressão de Status do Pedido
+### Progressão e Arquivo de Pedido
 
 ```
-Admin clica no card do pedido → OrderDetailModal
-→ Clica no botão de ação (ex: "Marcar como Preparando")
-→ updateDoc status = 'preparando'
-→ Opcional: abre WhatsApp para notificar cliente
-→ Card move para a coluna correta no Kanban
+Admin: PREPARAR → DESPACHAR → CONCLUIR → pedido em "Finalizado"
+Admin clica TERMINAR
+→ addDoc em sales (completedAt = agora)
+→ updateDoc order (archived: true)
+→ Pedido desaparece do kanban
+→ Aparece na página Vendas
 ```
 
-### 20.4 Login do Master
+### Configuração de Horários
 
 ```
-Master acessa /admin/login
-→ Digita idallsolucoes@gmail.com + senha
-→ signInWithEmailAndPassword
+Admin acessa /admin/times
+→ Desmarca "Fechado" para os dias que abre
+→ Define hora de abertura e fecho
+→ Salva → schedule guardado no tenant
+→ Cardápio público verifica automaticamente ao carregar
+```
+
+### Login do Master
+
+```
+Acessa /admin/login
+→ E-mail = VITE_SUPER_ADMIN_EMAIL
 → isSuperAdmin = true
 → Redireciona para /superadmin
-→ Dashboard mostra todos os tenants cadastrados
 ```
 
 ---
 
-## 21. Variáveis de Ambiente
-
-| Variável | Uso |
-|----------|-----|
-| `GEMINI_API_KEY` | API do Google AI Studio (injetada pelo Vite, não utilizada no código atual) |
-| `APP_URL` | URL base do Cloud Run (não utilizada diretamente no código atual) |
-
-> As credenciais Firebase estão em `firebase-applet-config.json`, não em variáveis de ambiente.
-
----
-
-## Limitações Conhecidas
-
-| Item | Situação |
-|------|---------|
-| Carrinho multi-restaurante | Carrinho não é isolado por tenant |
-| Pedidos no Super Admin | Super admin não vê pedidos dos restaurantes (bloqueado pelas rules) |
-| Upload de imagens | Imagens são inseridas por URL, sem upload direto |
-| Ordenação de categorias | Campo `order` existente no schema mas sem drag-and-drop implementado |
-| Cloud Functions | Template criado mas nenhuma função está deployada |
-| Paginação | Lista de pedidos e produtos sem paginação |
-
----
-
-*Gerado em: maio de 2026 — SaasMenu v1.0*
+*Documentação atualizada: junho 2026 — Ordery HQ*
