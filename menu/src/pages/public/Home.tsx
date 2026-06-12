@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import "./Home.css";
 
-const WA_NUMBER = "5524998380056";
+const WA_NUMBER = import.meta.env.VITE_WA_CONTACT as string;
 function waLink(msg: string) {
   return `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`;
 }

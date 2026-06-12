@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../../services/firebase";
 import { useAuth } from "../../contexts/AuthContext";
@@ -7,12 +7,10 @@ import { Input } from "../../components/ui/Input";
 import toast from "react-hot-toast";
 import { MenuQrCode } from "../../components/admin/MenuQrCode";
 import { DEFAULT_TENANT_COLOR } from "../../lib/theme";
+import { Upload, X } from "lucide-react";
 
-const convertDriveUrl = (url: string): string => {
-  const match = url.match(/drive\.google\.com\/file\/d\/([^/]+)/);
-  if (match) return `https://lh3.googleusercontent.com/d/${match[1]}`;
-  return url;
-};
+const CLOUDINARY_CLOUD = import.meta.env.VITE_CLOUDINARY_CLOUD as string;
+const CLOUDINARY_PRESET = import.meta.env.VITE_CLOUDINARY_PRESET as string;
 
 export const Settings: React.FC = () => {
   const { tenant, refreshTenant } = useAuth();
@@ -22,6 +20,8 @@ export const Settings: React.FC = () => {
   const [logoUrl, setLogoUrl] = useState("");
   const [themeColor, setThemeColor] = useState(DEFAULT_TENANT_COLOR);
   const [loading, setLoading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<number | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (tenant) {
@@ -32,6 +32,45 @@ export const Settings: React.FC = () => {
       setThemeColor(tenant.themeColor || DEFAULT_TENANT_COLOR);
     }
   }, [tenant]);
+
+  const handleLogoUpload = (file: File) => {
+    if (!file.type.startsWith("image/")) { toast.error("Selecione uma imagem válida."); return; }
+    if (file.size > 5 * 1024 * 1024) { toast.error("A imagem deve ter no máximo 5MB."); return; }
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", CLOUDINARY_PRESET);
+    formData.append("public_id", `logos_${tenant?.id}`);
+
+    const xhr = new XMLHttpRequest();
+
+    xhr.upload.addEventListener("progress", (e) => {
+      if (e.lengthComputable) {
+        setUploadProgress(Math.round((e.loaded / e.total) * 100));
+      }
+    });
+
+    xhr.addEventListener("load", () => {
+      if (xhr.status === 200) {
+        const data = JSON.parse(xhr.responseText);
+        setLogoUrl(data.secure_url);
+        setUploadProgress(null);
+        toast.success("Logo carregada! Clica em Salvar para confirmar.");
+      } else {
+        toast.error("Erro ao fazer upload. Tenta novamente.");
+        setUploadProgress(null);
+      }
+    });
+
+    xhr.addEventListener("error", () => {
+      toast.error("Erro de conexão durante o upload.");
+      setUploadProgress(null);
+    });
+
+    xhr.open("POST", `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`);
+    xhr.send(formData);
+    setUploadProgress(0);
+  };
 
   const save = async () => {
     if (!tenant) return;
@@ -56,7 +95,6 @@ export const Settings: React.FC = () => {
       await refreshTenant();
       toast.success("Configurações salvas com sucesso!");
     } catch (error: any) {
-      console.error("Update error:", error);
       if (error?.code === "permission-denied") {
         toast.error("Sem permissão para salvar.", { duration: 6000 });
       } else if (error?.code === "unavailable") {
@@ -134,19 +172,58 @@ export const Settings: React.FC = () => {
                   </div>
                 </div>
               </div>
+            </div>
 
-              <div className="flex items-center gap-4 col-span-2">
-                {logoUrl && (
-                  <img src={logoUrl} alt="Logo" className="w-14 h-14 rounded-full object-cover border border-line-2 flex-shrink-0" />
+            {/* Logo upload */}
+            <div>
+              <label className="block text-sm font-bold text-muted mb-3">Logo do Restaurante</label>
+              <div className="flex items-center gap-4">
+                {logoUrl ? (
+                  <div className="relative shrink-0">
+                    <img src={logoUrl} alt="Logo" className="w-16 h-16 rounded-full object-cover border border-line-2" />
+                    <button
+                      type="button"
+                      onClick={() => setLogoUrl("")}
+                      className="absolute -top-1 -right-1 w-5 h-5 bg-warn text-white rounded-full flex items-center justify-center"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="w-16 h-16 rounded-full border-2 border-dashed border-line-2 flex items-center justify-center shrink-0 text-faint">
+                    <Upload className="h-5 w-5" />
+                  </div>
                 )}
-                <div className="flex-1">
-                  <Input
-                    label="URL da Logo (Opcional)"
-                    value={logoUrl}
-                    onChange={(e) => setLogoUrl(convertDriveUrl(e.target.value))}
-                    placeholder="https://... ou link do Google Drive"
+
+                <div className="flex-1 space-y-2">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => { const f = e.target.files?.[0]; if (f) handleLogoUpload(f); e.target.value = ""; }}
                   />
-                  <p className="mt-1 text-xs text-faint">Links do Google Drive são convertidos automaticamente.</p>
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploadProgress !== null}
+                    className="w-full py-2.5 px-4 rounded-xl border border-dashed border-line-2 text-sm text-muted hover:border-accent hover:text-accent transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {uploadProgress !== null
+                      ? `A carregar… ${uploadProgress}%`
+                      : logoUrl ? "Trocar imagem" : "Clica para fazer upload"}
+                  </button>
+
+                  {uploadProgress !== null && (
+                    <div className="h-1.5 rounded-full bg-elevated overflow-hidden">
+                      <div
+                        className="h-full bg-accent transition-all duration-200"
+                        style={{ width: `${uploadProgress}%` }}
+                      />
+                    </div>
+                  )}
+
+                  <p className="text-xs text-faint">PNG, JPG ou WEBP · máx. 5 MB</p>
                 </div>
               </div>
             </div>

@@ -4,7 +4,7 @@ import { doc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../services/firebase';
 import { Tenant } from '../types';
 
-export const SUPER_ADMIN_EMAIL = 'idallsolucoes@gmail.com';
+export const SUPER_ADMIN_EMAIL = import.meta.env.VITE_SUPER_ADMIN_EMAIL as string;
 
 interface AuthContextData {
   user: User | null;
