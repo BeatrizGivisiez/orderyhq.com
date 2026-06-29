@@ -1,9 +1,11 @@
+'use client';
+
 import React, { useEffect, useState, useMemo } from 'react';
 import { collection, onSnapshot, orderBy, query } from 'firebase/firestore';
-import { db } from '../../../services/firebase';
-import { useAuth } from '../../../contexts/AuthContext';
-import { Sale } from '../../../types';
-import { formatCurrency } from '../../../lib/utils';
+import { db } from '@/services/firebase';
+import { useAuth } from '@/contexts/AuthContext';
+import { Sale } from '@/types';
+import { formatCurrency } from '@/lib/utils';
 import { TrendingUp, ShoppingBag, Receipt, Search, ChevronLeft, ChevronRight } from 'lucide-react';
 import { format, startOfDay, startOfWeek, startOfMonth, startOfYear } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -264,3 +266,5 @@ export const Sales: React.FC = () => {
     </div>
   );
 };
+
+export default Sales;

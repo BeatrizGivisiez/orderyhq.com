@@ -1,8 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
-import "./Home.css";
+'use client';
 
-const WA_NUMBER = import.meta.env.VITE_WA_CONTACT as string;
+import React, { useEffect, useRef, useState } from "react";
+import Link from "next/link";
+import "./home.css";
+
+const WA_NUMBER = process.env.NEXT_PUBLIC_WA_CONTACT as string;
 function waLink(msg: string) {
   return `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`;
 }
@@ -119,9 +121,10 @@ function fmtBRL(v: number) {
 }
 
 function KanbanBoard({ title }: { title: string }) {
-  const [board, setBoard] = useState<Board>(makeInitialBoard);
+  const [board, setBoard] = useState<Board | null>(null);
 
   useEffect(() => {
+    setBoard(makeInitialBoard());
     const id = setInterval(() => setBoard(stepBoard), 2600);
     return () => clearInterval(id);
   }, []);
@@ -141,7 +144,7 @@ function KanbanBoard({ title }: { title: string }) {
         </span>
       </div>
       <div className="kanban">
-        {STATUS_ORDER.map((s) => (
+        {board && STATUS_ORDER.map((s) => (
           <div className="kcol" data-status={s} key={s}>
             <div className="kcol-head">
               <span className="name">{COLUMN_LABELS[s]}</span>
@@ -250,12 +253,12 @@ export const Home: React.FC = () => {
           </nav>
 
           <div className="hl-nav-right">
-            <Link className="btn btn-ghost btn-sm" to="/admin/login">
+            <Link className="btn btn-ghost btn-sm" href="/admin/login">
               Entrar
             </Link>
             {/* <Link
               className="btn btn-primary btn-sm"
-              to="/admin/login?mode=register"
+              href="/admin/login?mode=register"
             >
               Criar conta grátis
             </Link> */}
@@ -284,7 +287,7 @@ export const Home: React.FC = () => {
               <div className="hero-cta">
                 <Link
                   className="btn btn-primary btn-lg"
-                  to="/admin/login?mode=register"
+                  href="/admin/login?mode=register"
                 >
                   Assumir o controle do menu
                 </Link>
@@ -708,7 +711,7 @@ export const Home: React.FC = () => {
               </p>
               <Link
                 className="btn btn-primary btn-lg"
-                to="/admin/login?mode=register"
+                href="/admin/login?mode=register"
               >
                 Criar meu cardápio agora
               </Link>
@@ -769,3 +772,5 @@ export const Home: React.FC = () => {
     </div>
   );
 };
+
+export default Home;

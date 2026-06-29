@@ -1,11 +1,14 @@
+'use client';
+
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 import {
   signInWithEmailAndPassword,
   sendPasswordResetEmail,
 } from "firebase/auth";
-import { auth } from "../../services/firebase";
-import { SUPER_ADMIN_EMAIL } from "../../contexts/AuthContext";
+import { auth } from "@/services/firebase";
+import { SUPER_ADMIN_EMAIL } from "@/contexts/AuthContext";
 import toast from "react-hot-toast";
 import "./login.css";
 
@@ -191,7 +194,7 @@ export const Login: React.FC = () => {
   const [success, setSuccess] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [authError, setAuthError] = useState("");
-  const navigate = useNavigate();
+  const router = useRouter();
 
   function clearErr(field: string) {
     setAuthError("");
@@ -255,7 +258,7 @@ export const Login: React.FC = () => {
       setSuccess(true);
       setTimeout(
         () =>
-          navigate(
+          router.push(
             cred.user.email === SUPER_ADMIN_EMAIL ? "/superadmin" : "/admin",
           ),
         1300,
@@ -273,11 +276,11 @@ export const Login: React.FC = () => {
         {/* Brand panel */}
         <aside className="auth-brand">
           <div className="auth-brand-head">
-            <Link className="hl-logo" to="/">
+            <Link className="hl-logo" href="/">
               <span>Ordery</span>
               <span className="hq">HQ</span>
             </Link>
-            <Link className="auth-back" to="/">
+            <Link className="auth-back" href="/">
               ← Voltar ao site
             </Link>
           </div>
@@ -319,7 +322,7 @@ export const Login: React.FC = () => {
             {!success ? (
               <div className="auth-form-inner">
                 <div className="auth-card-top">
-                  <Link className="hl-logo auth-logo" to="/">
+                  <Link className="hl-logo auth-logo" href="/">
                     <span>Ordery</span>
                     <span className="hq">HQ</span>
                   </Link>
@@ -425,3 +428,5 @@ export const Login: React.FC = () => {
     </div>
   );
 };
+
+export default Login;

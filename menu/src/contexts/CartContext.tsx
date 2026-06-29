@@ -1,3 +1,5 @@
+'use client';
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Product, OrderItem } from '../types';
 
@@ -14,6 +16,7 @@ const CartContext = createContext<CartContextData>({} as CartContextData);
 
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [items, setItems] = useState<OrderItem[]>(() => {
+    if (typeof window === 'undefined') return [];
     const storagedCart = localStorage.getItem('@SaasMenu:cart');
     if (storagedCart) return JSON.parse(storagedCart);
     return [];

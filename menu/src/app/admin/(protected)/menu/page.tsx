@@ -1,11 +1,13 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
 import { collection, query, onSnapshot, doc, setDoc, deleteDoc, addDoc } from 'firebase/firestore';
-import { db } from '../../../services/firebase';
-import { useAuth } from '../../../contexts/AuthContext';
-import { Product, Category } from '../../../types';
-import { Button } from '../../../components/ui/Button';
-import { Input } from '../../../components/ui/Input';
-import { formatCurrency } from '../../../lib/utils';
+import { db } from '@/services/firebase';
+import { useAuth } from '@/contexts/AuthContext';
+import { Product, Category } from '@/types';
+import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
+import { formatCurrency } from '@/lib/utils';
 import toast from 'react-hot-toast';
 import { Plus, Trash2, Edit2, X, ShoppingBag, Tag, LayoutList, LayoutGrid } from 'lucide-react';
 
@@ -408,3 +410,5 @@ export const MenuManager: React.FC = () => {
     </div>
   );
 };
+
+export default MenuManager;

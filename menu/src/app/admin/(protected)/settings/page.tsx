@@ -1,16 +1,18 @@
+'use client';
+
 import React, { useState, useEffect, useRef } from "react";
 import { doc, updateDoc } from "firebase/firestore";
-import { db } from "../../../services/firebase";
-import { useAuth } from "../../../contexts/AuthContext";
-import { Button } from "../../../components/ui/Button";
-import { Input } from "../../../components/ui/Input";
+import { db } from "@/services/firebase";
+import { useAuth } from "@/contexts/AuthContext";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 import toast from "react-hot-toast";
-import { MenuQrCode } from "../../../components/admin/MenuQrCode";
-import { DEFAULT_TENANT_COLOR } from "../../../lib/theme";
+import { MenuQrCode } from "@/components/admin/MenuQrCode";
+import { DEFAULT_TENANT_COLOR } from "@/lib/theme";
 import { Upload, X } from "lucide-react";
 
-const CLOUDINARY_CLOUD = import.meta.env.VITE_CLOUDINARY_CLOUD as string;
-const CLOUDINARY_PRESET = import.meta.env.VITE_CLOUDINARY_PRESET as string;
+const CLOUDINARY_CLOUD = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD as string;
+const CLOUDINARY_PRESET = process.env.NEXT_PUBLIC_CLOUDINARY_PRESET as string;
 
 export const Settings: React.FC = () => {
   const { tenant, refreshTenant } = useAuth();
@@ -243,3 +245,5 @@ export const Settings: React.FC = () => {
     </div>
   );
 };
+
+export default Settings;

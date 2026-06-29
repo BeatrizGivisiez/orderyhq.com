@@ -1,14 +1,16 @@
+'use client';
+
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams } from "next/navigation";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
-import { db } from "../../services/firebase";
-import { Tenant, Product, Category } from "../../types";
-import { useCart } from "../../contexts/CartContext";
-import { formatCurrency } from "../../lib/utils";
+import { db } from "@/services/firebase";
+import { Tenant, Product, Category } from "@/types";
+import { useCart } from "@/contexts/CartContext";
+import { formatCurrency } from "@/lib/utils";
 import { ShoppingBag, Plus, Phone, X } from "lucide-react";
-import { CartModal } from "../../components/public/CartModal";
-import { DEFAULT_TENANT_COLOR } from "../../lib/theme";
-import { WeekSchedule } from "../../types";
+import { CartModal } from "@/components/public/CartModal";
+import { DEFAULT_TENANT_COLOR } from "@/lib/theme";
+import { WeekSchedule } from "@/types";
 
 const DAY_KEYS: (keyof WeekSchedule)[] = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
 const DAY_LABELS: Record<keyof WeekSchedule, string> = {
@@ -40,7 +42,7 @@ function getScheduleStatus(schedule: WeekSchedule): { open: boolean; hint: strin
 }
 
 export const RestaurantMenu: React.FC = () => {
-  const { slug } = useParams<{ slug: string }>();
+  const params = useParams(); const slug = params.slug as string;
   const [tenant, setTenant] = useState<Tenant | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -391,3 +393,5 @@ export const RestaurantMenu: React.FC = () => {
     </div>
   );
 };
+
+export default RestaurantMenu;
