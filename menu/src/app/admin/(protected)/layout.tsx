@@ -1,6 +1,9 @@
-import React, { useState } from "react";
-import { Navigate, Outlet, Link, useLocation } from "react-router-dom";
-import { useAuth } from "../../contexts/AuthContext";
+'use client';
+
+import React, { useEffect, useState } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
+import Link from 'next/link';
+import { useAuth } from '@/contexts/AuthContext';
 import {
   LayoutDashboard,
   Menu as MenuIcon,
@@ -13,12 +16,13 @@ import {
   TrendingUp,
   AlignJustify,
   X,
-} from "lucide-react";
-import { useTheme } from "../../hooks/useTheme";
+} from 'lucide-react';
+import { useTheme } from '@/hooks/useTheme';
 
-export const AdminLayout: React.FC = () => {
-  const { user, tenant, loading, logout } = useAuth();
-  const location = useLocation();
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
+  const { user, tenant, loading, logout, isSuperAdmin } = useAuth();
+  const pathname = usePathname();
+  const router = useRouter();
   const { isDark, toggle } = useTheme();
   const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -30,27 +34,31 @@ export const AdminLayout: React.FC = () => {
     );
   }
 
-  if (!user) {
-    return <Navigate to="/admin/login" state={{ from: location }} replace />;
-  }
+  useEffect(() => {
+    if (!loading && !user) router.replace('/admin/login');
+    if (!loading && isSuperAdmin) router.replace('/superadmin');
+  }, [loading, user, isSuperAdmin, router]);
+
+  if (!user || isSuperAdmin) return null;
 
   const navItems = [
-    { name: "Pedidos", path: "/admin", icon: LayoutDashboard },
-    { name: "Cardápio", path: "/admin/menu", icon: MenuIcon },
-    { name: "Horários", path: "/admin/times", icon: Clock },
-    { name: "Vendas", path: "/admin/sales", icon: TrendingUp },
-    { name: "Configurações", path: "/admin/settings", icon: Settings },
+    { name: 'Pedidos', path: '/admin', icon: LayoutDashboard },
+    { name: 'Cardápio', path: '/admin/menu', icon: MenuIcon },
+    { name: 'Horários', path: '/admin/times', icon: Clock },
+    { name: 'Vendas', path: '/admin/sales', icon: TrendingUp },
+    { name: 'Configurações', path: '/admin/settings', icon: Settings },
   ];
 
   const closeDrawer = () => setDrawerOpen(false);
 
-  const brandStyle = (!isDark && tenant?.themeColor)
-    ? { '--color-accent': tenant.themeColor, '--color-accent-2': tenant.themeColor } as React.CSSProperties
-    : undefined;
+  const brandStyle =
+    !isDark && tenant?.themeColor
+      ? ({ '--color-accent': tenant.themeColor, '--color-accent-2': tenant.themeColor } as React.CSSProperties)
+      : undefined;
 
   return (
     <div
-      className={`flex h-screen bg-bg font-sans text-content overflow-hidden${!isDark ? " light" : ""}`}
+      className={`flex h-screen bg-bg font-sans text-content overflow-hidden${!isDark ? ' light' : ''}`}
       style={brandStyle}
     >
       {/* Sidebar - Desktop */}
@@ -64,19 +72,17 @@ export const AdminLayout: React.FC = () => {
 
         <nav className="flex-1 px-4 space-y-1 mt-4">
           {navItems.map((item) => {
-            const isActive = location.pathname === item.path;
+            const isActive = pathname === item.path;
             const Icon = item.icon;
             return (
               <Link
                 key={item.name}
-                to={item.path}
+                href={item.path}
                 className={`flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-colors ${
-                  isActive
-                    ? "bg-accent/12 text-accent"
-                    : "text-muted hover:bg-elevated hover:text-content"
+                  isActive ? 'bg-accent/12 text-accent' : 'text-muted hover:bg-elevated hover:text-content'
                 }`}
               >
-                <Icon className={`h-5 w-5 ${isActive ? "text-accent" : "text-faint"}`} />
+                <Icon className={`h-5 w-5 ${isActive ? 'text-accent' : 'text-faint'}`} />
                 {item.name}
               </Link>
             );
@@ -86,7 +92,7 @@ export const AdminLayout: React.FC = () => {
         <div className="p-4 border-t border-line space-y-3">
           {tenant?.slug && (
             <Link
-              to={`/r/${tenant.slug}`}
+              href={`/r/${tenant.slug}`}
               target="_blank"
               className="bg-elevated border border-line-2 hover:border-accent/40 transition-colors w-full flex items-center justify-center rounded-lg py-2 text-xs font-bold text-muted hover:text-accent gap-2"
             >
@@ -105,16 +111,13 @@ export const AdminLayout: React.FC = () => {
 
       {/* Mobile Drawer Overlay */}
       {drawerOpen && (
-        <div
-          className="fixed inset-0 z-40 bg-black/50 md:hidden"
-          onClick={closeDrawer}
-        />
+        <div className="fixed inset-0 z-40 bg-black/50 md:hidden" onClick={closeDrawer} />
       )}
 
       {/* Mobile Drawer */}
       <aside
         className={`fixed inset-y-0 left-0 z-50 w-72 bg-surface border-r border-line flex flex-col transform transition-transform duration-300 ease-in-out md:hidden ${
-          drawerOpen ? "translate-x-0" : "-translate-x-full"
+          drawerOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         <div className="p-5 flex items-center justify-between border-b border-line">
@@ -134,20 +137,18 @@ export const AdminLayout: React.FC = () => {
 
         <nav className="flex-1 px-4 space-y-1 mt-4 overflow-y-auto">
           {navItems.map((item) => {
-            const isActive = location.pathname === item.path;
+            const isActive = pathname === item.path;
             const Icon = item.icon;
             return (
               <Link
                 key={item.name}
-                to={item.path}
+                href={item.path}
                 onClick={closeDrawer}
                 className={`flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-colors ${
-                  isActive
-                    ? "bg-accent/12 text-accent"
-                    : "text-muted hover:bg-elevated hover:text-content"
+                  isActive ? 'bg-accent/12 text-accent' : 'text-muted hover:bg-elevated hover:text-content'
                 }`}
               >
-                <Icon className={`h-5 w-5 ${isActive ? "text-accent" : "text-faint"}`} />
+                <Icon className={`h-5 w-5 ${isActive ? 'text-accent' : 'text-faint'}`} />
                 {item.name}
               </Link>
             );
@@ -157,7 +158,7 @@ export const AdminLayout: React.FC = () => {
         <div className="p-4 border-t border-line space-y-2">
           {tenant?.slug && (
             <Link
-              to={`/r/${tenant.slug}`}
+              href={`/r/${tenant.slug}`}
               target="_blank"
               onClick={closeDrawer}
               className="bg-elevated border border-line-2 hover:border-accent/40 transition-colors w-full flex items-center justify-center rounded-lg py-2 text-xs font-bold text-muted hover:text-accent gap-2"
@@ -170,7 +171,7 @@ export const AdminLayout: React.FC = () => {
             className="flex w-full items-center justify-center gap-2 rounded-lg py-2 text-xs font-bold text-muted hover:bg-elevated transition-colors"
           >
             {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-            {isDark ? "Modo claro" : "Modo escuro"}
+            {isDark ? 'Modo claro' : 'Modo escuro'}
           </button>
           <button
             onClick={logout}
@@ -192,14 +193,12 @@ export const AdminLayout: React.FC = () => {
           >
             <AlignJustify className="h-5 w-5" />
           </button>
-
           <div className="flex items-center gap-2">
             <div className="w-7 h-7 bg-accent rounded-lg flex items-center justify-center text-accent-ink">
               <Store className="h-4 w-4" />
             </div>
             <span className="text-base font-bold text-content">Ordery HQ</span>
           </div>
-
           <div className="w-9 h-9 rounded-full bg-accent/12 border border-line flex items-center justify-center">
             <span className="text-[10px] font-bold text-accent">
               {user.email?.charAt(0).toUpperCase()}
@@ -211,9 +210,7 @@ export const AdminLayout: React.FC = () => {
         <header className="hidden md:flex h-20 bg-surface border-b border-line px-8 items-center justify-between shrink-0">
           <div>
             <h1 className="text-2xl font-bold text-content">Painel de Controle</h1>
-            <p className="text-muted text-sm">
-              Bem-vindo, {tenant?.name || user.email}
-            </p>
+            <p className="text-muted text-sm">Bem-vindo, {tenant?.name || user.email}</p>
           </div>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2 px-4 py-2 border border-line rounded-full text-sm font-medium text-muted">
@@ -222,7 +219,7 @@ export const AdminLayout: React.FC = () => {
             </div>
             <button
               onClick={toggle}
-              title={isDark ? "Modo claro" : "Modo escuro"}
+              title={isDark ? 'Modo claro' : 'Modo escuro'}
               className="w-9 h-9 rounded-lg border border-line flex items-center justify-center text-muted hover:text-content hover:bg-elevated transition-colors"
             >
               {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
@@ -238,9 +235,9 @@ export const AdminLayout: React.FC = () => {
           style={{ outline: 'none' }}
           tabIndex={-1}
         >
-          <Outlet />
+          {children}
         </div>
       </main>
     </div>
   );
-};
+}

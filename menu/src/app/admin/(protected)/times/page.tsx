@@ -1,10 +1,12 @@
+'use client';
+
 import React, { useState, useEffect } from "react";
 import { doc, updateDoc } from "firebase/firestore";
-import { db } from "../../../services/firebase";
-import { useAuth } from "../../../contexts/AuthContext";
-import { Button } from "../../../components/ui/Button";
+import { db } from "@/services/firebase";
+import { useAuth } from "@/contexts/AuthContext";
+import { Button } from "@/components/ui/Button";
 import toast from "react-hot-toast";
-import { WeekSchedule, DaySchedule } from "../../../types";
+import { WeekSchedule, DaySchedule } from "@/types";
 
 const DAYS: { key: keyof WeekSchedule; label: string }[] = [
   { key: "sun", label: "Domingo" },
@@ -138,3 +140,5 @@ export const Times: React.FC = () => {
     </div>
   );
 };
+
+export default Times;

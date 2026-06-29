@@ -1,9 +1,11 @@
+'use client';
+
 import React, { useEffect, useState } from 'react';
 import { collection, query, orderBy, onSnapshot, doc, updateDoc, addDoc } from 'firebase/firestore';
-import { db } from '../../../services/firebase';
-import { useAuth } from '../../../contexts/AuthContext';
-import { Order, OrderStatus } from '../../../types';
-import { formatCurrency, formatPhoneForWA } from '../../../lib/utils';
+import { db } from '@/services/firebase';
+import { useAuth } from '@/contexts/AuthContext';
+import { Order, OrderStatus } from '@/types';
+import { formatCurrency, formatPhoneForWA } from '@/lib/utils';
 import toast from 'react-hot-toast';
 import { Play, Send, CheckCircle, X, Phone, MapPin, Clock, Archive } from 'lucide-react';
 import { format } from 'date-fns';
@@ -388,3 +390,5 @@ export const Dashboard: React.FC = () => {
     </div>
   );
 };
+
+export default Dashboard;
