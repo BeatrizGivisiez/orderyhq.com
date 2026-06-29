@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { collection, query, orderBy, onSnapshot, doc, updateDoc } from 'firebase/firestore';
-import { db } from '../../services/firebase';
-import { useAuth } from '../../contexts/AuthContext';
-import { Order, OrderStatus } from '../../types';
-import { formatCurrency, formatPhoneForWA } from '../../lib/utils';
+import { collection, query, orderBy, onSnapshot, doc, updateDoc, addDoc } from 'firebase/firestore';
+import { db } from '../../../services/firebase';
+import { useAuth } from '../../../contexts/AuthContext';
+import { Order, OrderStatus } from '../../../types';
+import { formatCurrency, formatPhoneForWA } from '../../../lib/utils';
 import toast from 'react-hot-toast';
 import { Play, Send, CheckCircle, X, Phone, MapPin, Clock, Archive } from 'lucide-react';
 import { format } from 'date-fns';
@@ -241,9 +241,20 @@ export const Dashboard: React.FC = () => {
   const archiveOrder = async (order: Order) => {
     if (!tenant) return;
     try {
+      const completedAt = Date.now();
       await updateDoc(doc(db, `tenants/${tenant.id}/orders`, order.id), {
         archived: true,
-        completedAt: Date.now(),
+        completedAt,
+      });
+      await addDoc(collection(db, `tenants/${tenant.id}/sales`), {
+        orderId: order.id,
+        customerName: order.customerName,
+        customerPhone: order.customerPhone,
+        customerAddress: order.customerAddress,
+        items: order.items,
+        total: order.total,
+        createdAt: order.createdAt,
+        completedAt,
       });
       toast.success('Pedido concluído!');
     } catch (err) {

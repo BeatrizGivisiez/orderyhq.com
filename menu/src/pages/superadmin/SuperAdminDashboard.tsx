@@ -107,11 +107,11 @@ export const SuperAdminDashboard: React.FC = () => {
                   <td className="px-5 py-4">
                     <div className="flex items-center gap-3">
                       <div
-                        className="w-8 h-8 rounded-lg flex items-center justify-center text-white shrink-0"
+                        className="w-8 h-8 rounded-lg flex items-center justify-center text-white shrink-0 overflow-hidden"
                         style={{ backgroundColor: tenant.themeColor || DEFAULT_TENANT_COLOR }}
                       >
                         {tenant.logoUrl
-                          ? <img src={tenant.logoUrl} alt="" className="w-full h-full object-cover rounded-lg" />
+                          ? <img src={tenant.logoUrl} alt="" className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
                           : <Store className="h-4 w-4" />
                         }
                       </div>

@@ -44,8 +44,15 @@ export const AdminLayout: React.FC = () => {
 
   const closeDrawer = () => setDrawerOpen(false);
 
+  const brandStyle = (!isDark && tenant?.themeColor)
+    ? { '--color-accent': tenant.themeColor, '--color-accent-2': tenant.themeColor } as React.CSSProperties
+    : undefined;
+
   return (
-    <div className={`flex h-screen bg-bg font-sans text-content overflow-hidden${!isDark ? " light" : ""}`}>
+    <div
+      className={`flex h-screen bg-bg font-sans text-content overflow-hidden${!isDark ? " light" : ""}`}
+      style={brandStyle}
+    >
       {/* Sidebar - Desktop */}
       <aside className="hidden w-64 border-r border-line bg-surface md:flex flex-col">
         <div className="p-6 flex items-center gap-3">
@@ -176,7 +183,7 @@ export const AdminLayout: React.FC = () => {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col overflow-hidden">
+      <main className="flex-1 flex flex-col overflow-hidden" style={{ outline: 'none' }}>
         {/* Mobile Header */}
         <header className="flex h-16 items-center justify-between border-b border-line bg-surface px-4 md:hidden">
           <button
@@ -226,7 +233,11 @@ export const AdminLayout: React.FC = () => {
           </div>
         </header>
 
-        <div className="flex-1 overflow-y-auto p-4 sm:p-8">
+        <div
+          className="flex-1 overflow-y-auto p-4 sm:p-8 bg-surface-2 min-h-0"
+          style={{ outline: 'none' }}
+          tabIndex={-1}
+        >
           <Outlet />
         </div>
       </main>

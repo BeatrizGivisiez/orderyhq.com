@@ -15,17 +15,17 @@ import { CartProvider } from "./contexts/CartContext";
 
 // Layouts & Pages
 import { AdminLayout } from "./components/admin/AdminLayout";
-import { Login } from "./pages/admin/Login";
-import { Dashboard } from "./pages/admin/Dashboard";
-import { MenuManager } from "./pages/admin/MenuManager";
-import { Settings } from "./pages/admin/Settings";
+import { Login } from "./pages/login/page";
+import { Dashboard } from "./pages/admin/dashboard/page";
+import { MenuManager } from "./pages/admin/menu/page";
+import { Settings } from "./pages/admin/settings/page";
 import { RestaurantMenu } from "./pages/public/RestaurantMenu";
 import { Home } from "./pages/public/Home";
 import { SuperAdminLayout } from "./components/superadmin/SuperAdminLayout";
 import { SuperAdminDashboard } from "./pages/superadmin/SuperAdminDashboard";
 import { CreateRestaurant } from "./pages/superadmin/CreateRestaurant";
-import { Times } from "./pages/admin/Times";
-import { Sales } from "./pages/admin/Sales";
+import { Times } from "./pages/admin/times/page";
+import { Sales } from "./pages/admin/sales/page";
 
 export default function App() {
   return (

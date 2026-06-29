@@ -7,7 +7,7 @@ import {
 import { auth } from "../../services/firebase";
 import { SUPER_ADMIN_EMAIL } from "../../contexts/AuthContext";
 import toast from "react-hot-toast";
-import "./Login.css";
+import "./login.css";
 
 // ── Kanban mini (decorativo) ─────────────────────────────────────────────────
 

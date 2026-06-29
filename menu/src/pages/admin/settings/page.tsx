@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
 import { doc, updateDoc } from "firebase/firestore";
-import { db } from "../../services/firebase";
-import { useAuth } from "../../contexts/AuthContext";
-import { Button } from "../../components/ui/Button";
-import { Input } from "../../components/ui/Input";
+import { db } from "../../../services/firebase";
+import { useAuth } from "../../../contexts/AuthContext";
+import { Button } from "../../../components/ui/Button";
+import { Input } from "../../../components/ui/Input";
 import toast from "react-hot-toast";
-import { MenuQrCode } from "../../components/admin/MenuQrCode";
-import { DEFAULT_TENANT_COLOR } from "../../lib/theme";
+import { MenuQrCode } from "../../../components/admin/MenuQrCode";
+import { DEFAULT_TENANT_COLOR } from "../../../lib/theme";
 import { Upload, X } from "lucide-react";
 
 const CLOUDINARY_CLOUD = import.meta.env.VITE_CLOUDINARY_CLOUD as string;
@@ -111,8 +111,13 @@ export const Settings: React.FC = () => {
   const menuUrl = `${window.location.origin}/r/${displaySlug}`;
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
-      <h1 className="text-2xl font-bold tracking-tight text-content">Configurações</h1>
+    <div className="space-y-6">
+      <div className="flex items-center justify-between gap-4">
+        <h1 className="text-2xl font-bold tracking-tight text-content">Configurações</h1>
+        <Button type="button" isLoading={loading} onClick={save}>
+          Salvar Configurações
+        </Button>
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2">
@@ -228,11 +233,6 @@ export const Settings: React.FC = () => {
               </div>
             </div>
 
-            <div className="pt-4 border-t border-line flex justify-end">
-              <Button type="button" isLoading={loading} onClick={save}>
-                Salvar Configurações
-              </Button>
-            </div>
           </div>
         </div>
 

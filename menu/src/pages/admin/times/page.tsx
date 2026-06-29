@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { doc, updateDoc } from "firebase/firestore";
-import { db } from "../../services/firebase";
-import { useAuth } from "../../contexts/AuthContext";
-import { Button } from "../../components/ui/Button";
+import { db } from "../../../services/firebase";
+import { useAuth } from "../../../contexts/AuthContext";
+import { Button } from "../../../components/ui/Button";
 import toast from "react-hot-toast";
-import { WeekSchedule, DaySchedule } from "../../types";
+import { WeekSchedule, DaySchedule } from "../../../types";
 
 const DAYS: { key: keyof WeekSchedule; label: string }[] = [
   { key: "sun", label: "Domingo" },
@@ -62,12 +62,17 @@ export const Times: React.FC = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight text-content">Horários de Funcionamento</h1>
-        <p className="text-xs text-faint mt-1">
-          O banner "Fechado" aparece automaticamente no cardápio fora do horário configurado.
-        </p>
+    <div className="space-y-6">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight text-content">Horários de Funcionamento</h1>
+          <p className="text-xs text-faint mt-1">
+            O banner "Fechado" aparece automaticamente no cardápio fora do horário configurado.
+          </p>
+        </div>
+        <Button type="button" isLoading={loading} onClick={save}>
+          Salvar Horários
+        </Button>
       </div>
 
       <div className="bg-surface rounded-xl border border-line p-6 space-y-4">
@@ -129,11 +134,6 @@ export const Times: React.FC = () => {
           </table>
         </div>
 
-        <div className="flex justify-end pt-2 border-t border-line">
-          <Button type="button" isLoading={loading} onClick={save}>
-            Salvar Horários
-          </Button>
-        </div>
       </div>
     </div>
   );
